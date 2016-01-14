@@ -30,10 +30,21 @@ int ShaderUtility::LoadShader(char* vertexFilePath,char* fragmentFilePath, bool 
 	GLint success;
 	glGetProgramiv(programId, GL_LINK_STATUS, &success);
 	if (!success)
+	{
+		ShowError("Unable to link shader", MB_ICONERROR);
 		return 0;
-	glGetProgramiv(programId, GL_VALIDATE_STATUS, &success);
+	}
+	/*glGetProgramiv(programId, GL_VALIDATE_STATUS, &success);
 	if (!success)
+	{
+		const int maxInfoLogSize = 2048;
+		GLchar infoLog[maxInfoLogSize];
+		glGetProgramInfoLog(programId, maxInfoLogSize, NULL, infoLog);
+		char error[maxInfoLogSize + 64] = "Warning. Shader Compilation Failed";
+		strcat_s(error, (char*)infoLog);
+		ShowError(error, MB_ICONERROR);
 		return 0;
+	}*/
 
 	glUseProgram(programId);
 	glDeleteShader(vertexShaderID);
@@ -52,6 +63,7 @@ char* ShaderUtility::LoadFile(char* path,char* buffer,int bufferSize, bool debug
 		std::streamsize loaded = input.gcount();
 		input.close();
 		buffer[loaded] = '\0';
+		return buffer;
 	}
 	else
 	{

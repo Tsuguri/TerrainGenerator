@@ -16,6 +16,9 @@
     <Filter Include="Data">
       <UniqueIdentifier>{3abee3c2-7a3c-44ae-b8e1-69f89a30b753}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Systems">
+      <UniqueIdentifier>{14eef669-9df7-4827-b862-a0197eee7574}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLWindow.h">
@@ -33,6 +36,18 @@
     <ClInclude Include="ShaderUtility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Renderable.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectRenderer.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glew.c">
@@ -44,11 +59,21 @@
     <ClCompile Include="ShaderUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicFragment.fsh" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="BasicVertex.vsh" />
+    <None Include="BasicVertex.vsh" />
   </ItemGroup>
 </Project>

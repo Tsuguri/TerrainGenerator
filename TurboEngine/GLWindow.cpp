@@ -249,24 +249,9 @@ void GlWindow::SetBarInfo(HWND windowHandle)
 	SetWindowText(windowHandle, buffer);
 }
 
-void GlWindow::SetScene(bool isometric)
-{
-	glViewport(0, 0, windowWidth, windowHeight);
-
-	glEnable(GL_DEPTH_TEST);
-	glFrontFace(GL_CCW);
-	glPolygonMode(GL_FRONT, GL_FILL);
-	glPolygonMode(GL_BACK, GL_LINE);
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
-}
-
 void GlWindow::DrawScene()
 {
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, 0);
+	objRend->Render();
 
 	SwapBuffers(DCHandle);
 }
@@ -280,17 +265,18 @@ LRESULT GlWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (!InitializeGlW(hWnd))
 		{
 			MessageBox(nullptr, "Loading context failed", "Turbo Engine", MB_OK | MB_ICONERROR);
+			throw 0;
 			return EXIT_FAILURE;
 		}
-		shaderId = ShaderUtility::LoadShader("Basicvertex.vsh", "BasicFragment.fsh");
+		shaderId = ShaderUtility::LoadShader("BasicVertex.vsh", "BasicFragment.fsh");
 		if (shaderId == 0)
 			exit(EXIT_FAILURE);
 		SetBarInfo(hWnd);
 		InitializeVertexBuffer();
-		SetScene();
+		objRend = new ObjectRenderer(windowWidth, windowHeight, 8);
 		break;
 	case WM_SIZE:
-		SetScene();
+		objRend->ResizeWindow(windowWidth, windowHeight);
 		break;
 	case WM_DESTROY:
 		DeleteVertexBuffer();

@@ -42,7 +42,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -104,10 +104,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\adamo\Documents\Biblioteki;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,6 +151,10 @@
   <ItemGroup>
     <ClInclude Include="glew.h" />
     <ClInclude Include="GLWindow.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ObjectRenderer.h" />
+    <ClInclude Include="Renderable.h" />
+    <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="ShaderUtility.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="wglew.h" />
@@ -156,6 +162,10 @@
   <ItemGroup>
     <ClCompile Include="glew.c" />
     <ClCompile Include="GLWindow.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ObjectRenderer.cpp" />
+    <ClCompile Include="Renderable.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ShaderUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,9 +174,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="BasicVertex.vsh">
+    <None Include="BasicVertex.vsh">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </FxCompile>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

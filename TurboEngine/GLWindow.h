@@ -1,6 +1,8 @@
 #ifndef GLWINDOW_H
 #define GLWINDOW_H
 #include <windows.h>
+#include <glm\glm.hpp>
+#include "ObjectRenderer.h"
 
 class Window
 {
@@ -26,7 +28,7 @@ private:
 	void InitializeVertexBuffer();
 	void DeleteVertexBuffer();
 	unsigned int shaderId;
-
+	ObjectRenderer* objRend;
 
 public:
 	GlWindow() : Window(), RCHandle(nullptr), DCHandle(nullptr) {};
@@ -34,7 +36,7 @@ public:
 	bool InitializeGlW(HWND windowHandle);
 	void DeleteGlW();
 	void SetBarInfo(HWND windowHandle);
-	void SetScene(bool isometric=false);
+	//void SetScene(bool isometric=false);
 	void DrawScene();
 	LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 } okno;

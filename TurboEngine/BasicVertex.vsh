@@ -15,8 +15,8 @@ out vec4 colors;
 void main(void)
 {
 	position = vec4(positionIn, 1.0);
-	gl_Position = MVP*position;
-	position = ModelMat*position;
+	gl_Position = position;
+	position = position;
 	colors = colorIn;
 
 }

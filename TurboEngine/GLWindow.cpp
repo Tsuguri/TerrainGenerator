@@ -3,6 +3,10 @@
 #include "wglew.h"
 #include "Vertex.h"
 #include "ShaderUtility.h"
+#include "ModelLoader.h"
+#include <vector>
+#include "Mesh.h"
+#include <time.h>
 
 LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -84,14 +88,28 @@ bool Window::ChangeResolution(long width, long height, long colorDepth) const
 	dSS.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 	return ChangeDisplaySettings(&dSS, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL;
 }
-
+//Main Loop
 WPARAM Window::Run()
 {
 	MSG msg;
-	while (GetMessage(&msg, nullptr, 0, 0))
+	long time = GetTickCount();
+	long elapsed = 0;
+	while (shouldRun)
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		} //system messages handling
+
+		// robienie rzeczy.
+
+		long actualTime = GetTickCount();
+		elapsed = actualTime - time;
+		time = actualTime;
+		if (elapsed < 30.0L)
+			Sleep(30.0L - elapsed);
+
 	}
 	return msg.wParam;
 }
@@ -101,6 +119,7 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_DESTROY:
+		shouldRun = false;
 		PostQuitMessage(0);
 		break;
 	case WM_SIZE:
@@ -115,46 +134,23 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return 0L;
 }
 
-void GlWindow::InitializeVertexBuffer()
+void GlWindow::LoadModels()
 {
-	const float x0 = 1.0f;
-	const float y0 = 1.0f;
-	const float z0 = 1.0f;
-
-	Vertex vertices[] =
-	{
-		Vertex(-x0,-y0,0,1,1,0),
-		Vertex(x0,-y0,0,1,0,1),
-		Vertex(0,y0,0,0,1,1),
-		Vertex(-x0,y0,0,1,1,0),
-		Vertex(x0,y0,0,1,1,1),
-	};
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glGenBuffers(3, &vbo[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	GLuint positionAtt = 0;
-	GLuint colorAtt = 3;
-
-	glVertexAttribPointer(positionAtt, Vertex::PositionCount, GL_FLOAT, GL_FALSE,Vertex::VertexSize, 0);
-	glEnableVertexAttribArray(positionAtt);
-	glVertexAttribPointer(colorAtt, Vertex::ColorCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, (const GLvoid*)Vertex::PositionSize);
-	glEnableVertexAttribArray(colorAtt);
-	glBindBuffer(GL_ARRAY_BUFFER, NULL);
-
-	GLubyte indices[] = { 0,1,3,4};
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	std::vector<Vertex>* verts = new std::vector<Vertex>();
+	Vertex vets[6];
+	vets[0] = Vertex(-1, -1, 0, 1, 1, 1, 0, 0);
+	vets[1] = Vertex(-1, 1, 0, 1, 1, 1, 0, 0);
+	vets[2] = Vertex(1, 1, 0, 1, 1, 1, 0, 0);
+	vets[3] = Vertex(-1, -1, 0, 1, 1, 1, 0, 0);
+	vets[4] = Vertex(1, 1, 0, 1, 1, 1, 0, 0);
+	vets[5] = Vertex(1, -1, 0, 1, 1, 1, 0, 0);
+	for (int i = 0; i < 6; i++)
+		verts->push_back(vets[i]);
+	Mesh* mesh = new Mesh(verts);
+	Renderable* rend = new Renderable(mesh);
+	objRend->AddRenderable(rend);
 }
 
-void GlWindow::DeleteVertexBuffer()
-{
-	glDeleteBuffers(3, vbo);
-	glDeleteVertexArrays(1, &vao);
-}
 
 bool GlWindow::SetPixelsFormat(HDC dcHandle) const
 {
@@ -251,7 +247,7 @@ void GlWindow::SetBarInfo(HWND windowHandle)
 
 void GlWindow::DrawScene()
 {
-	objRend->Render();
+	objRend->Render(actualCamera);
 
 	SwapBuffers(DCHandle);
 }
@@ -262,24 +258,27 @@ LRESULT GlWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_CREATE:
+	{
 		if (!InitializeGlW(hWnd))
 		{
 			MessageBox(nullptr, "Loading context failed", "Turbo Engine", MB_OK | MB_ICONERROR);
 			throw 0;
 			return EXIT_FAILURE;
 		}
-		shaderId = ShaderUtility::LoadShader("BasicVertex.vsh", "BasicFragment.fsh");
-		if (shaderId == 0)
+		//shaderId = ShaderUtility::LoadShader("BasicVertex.vsh", "BasicFragment.fsh");
+		ShaderProgram* shad = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
+		if (shad->programId == 0)
 			exit(EXIT_FAILURE);
 		SetBarInfo(hWnd);
-		InitializeVertexBuffer();
-		objRend = new ObjectRenderer(windowWidth, windowHeight, 8);
-		break;
+		objRend = new ObjectRenderer(windowWidth, windowHeight, shad);
+		actualCamera = new Camera(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 1, 100, 45, 1920.0 / 1080.0);
+		LoadModels();
+	}
+	break;
 	case WM_SIZE:
 		objRend->ResizeWindow(windowWidth, windowHeight);
 		break;
 	case WM_DESTROY:
-		DeleteVertexBuffer();
 		DeleteGlW();
 		break;
 	case WM_PAINT:

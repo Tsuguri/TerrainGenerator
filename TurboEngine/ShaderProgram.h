@@ -8,6 +8,7 @@ public:
 	unsigned int programId;
 	ShaderProgram(char* vertexPath, char*fragmentPath);
 	void SetAsActive();
+	~ShaderProgram();
 };
 
 

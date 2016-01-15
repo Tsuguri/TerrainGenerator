@@ -10,6 +10,7 @@ protected:
 	HWND windowHandle;
 	long windowWidth;
 	long windowHeight;
+	bool shouldRun = true;
 public:
 	Window() :windowHandle(nullptr) {};
 	bool Initialize(HINSTANCE applicationHandle, POINT windowPosition, POINT windowSize, bool fullScreen=false, bool resolutionChange=true);
@@ -23,12 +24,12 @@ private:
 	HGLRC RCHandle;
 	HDC DCHandle;
 
-	unsigned int vao;
-	unsigned int vbo[3];
-	void InitializeVertexBuffer();
-	void DeleteVertexBuffer();
-	unsigned int shaderId;
+	//unsigned int vao;
+	//unsigned int vbo[3];
+	void LoadModels();
+	//unsigned int shaderId;
 	ObjectRenderer* objRend;
+	Camera* actualCamera;
 
 public:
 	GlWindow() : Window(), RCHandle(nullptr), DCHandle(nullptr) {};

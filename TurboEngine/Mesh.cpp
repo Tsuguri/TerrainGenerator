@@ -5,8 +5,6 @@
 
 Mesh::Mesh(char* path)
 {
-	indices = new std::vector<GLubyte>();
-	vertices = new std::vector<Vertex>();
 	count = 0;
 	Assimp::Importer import;
 	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -18,18 +16,24 @@ Mesh::Mesh(char* path)
 		return;
 	}
 	processNode(scene->mRootNode, scene);
+	count = indices.size();
 	SendToGPU();
-	Clear();
 }
 Mesh::Mesh(std::vector<Vertex>* verts)
 {
-	indices = new std::vector<GLubyte>();
-	vertices = verts;
-	for (int i = 0; i < vertices->size(); i++)
-		indices->push_back(i);
-	count = indices->size();
+	vertices = *verts;
+	for (int i = 0; i < vertices.size(); i++)
+		indices.push_back(i);
+	count = indices.size();
 	SendToGPU();
-	Clear();
+}
+
+Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<GLuint> *indices)
+{
+	this->indices = *indices;
+	this->vertices = *vertices;
+	count = this->indices.size();
+	SendToGPU();
 }
 
 Mesh::~Mesh()
@@ -40,8 +44,17 @@ Mesh::~Mesh()
 
 void Mesh::Dispose()
 {
-	glDeleteBuffers(3, vbo);
+	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &ibo);
 	glDeleteVertexArrays(1, &vao);
+}
+
+void Mesh::Render()
+{
+	glBindVertexArray(vao);
+//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,vbo[2]);
+	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, NULL);
+	glBindVertexArray(NULL);
 }
 
 int Mesh::GetCount() const
@@ -83,46 +96,30 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene)
 			v = mesh->mTextureCoords[0][i].y;
 		}
 		Vertex vex(x, y, z, s, q, p, u, v);
-		vertices->push_back(vex);
+		vertices.push_back(vex);
 
 	}
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
 		for (GLuint j = 0; j < face.mNumIndices; j++)
-			indices->push_back((GLubyte)face.mIndices[j]);
+			indices.push_back(face.mIndices[j]);
 	}
-	count += indices->size();
+	
 }
 
 void Mesh::SendToGPU()
 {
-	//const float x0 = 1.0f;
-	//const float y0 = 1.0f;
-	//const float z0 = 1.0f;
-	//Vertex verts[] =
-	//{
-	//	Vertex(-x0,-y0,1,1,1,0,1,0),
-	//	Vertex(x0,-y0,1,1,0,1,1,0),
-	//	Vertex(-x0,y0,1,0,1,1,1,0),
-	//	Vertex(x0,y0,1,1,1,0,1,0),
-	//	Vertex(-x0,-y0,-1,1,1,0,1,0),
-	//	Vertex(x0,-y0,-1,1,0,1,1,0),
-	//	Vertex(-x0,y0,-1,0,1,1,1,0),
-	//	Vertex(x0,y0,-1,1,1,0,1,0),
-	//};
-	//std::vector<Vertex> vrt;
-	//for (int i = 0; i < 4; i++)
-	//	vrt.push_back(verts[i]);
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
-	glGenBuffers(3, &vbo[0]);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
-	//int p = vrt.size();
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, vertices->size()*Vertex::VertexSize, vertices->data(), GL_STATIC_DRAW);
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ibo);
 
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size()*Vertex::VertexSize, vertices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
 	GLuint positionAtt = 0;
 	GLuint colorAtt = 3;
@@ -132,21 +129,8 @@ void Mesh::SendToGPU()
 	glVertexAttribPointer(colorAtt, Vertex::NormalCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, (const GLvoid*)Vertex::PositionSize);
 	glEnableVertexAttribArray(colorAtt);
 	glBindBuffer(GL_ARRAY_BUFFER, NULL);
+	glBindVertexArray(NULL);
 
-	/*GLubyte indcs[] = { 0,1,3,0,3,2,1,5,7,1,7,3,4,0,2,4,2,6,2,3,7,2,7,6,4,5,1,4,1,0,5,4,6,5,6,7 };
-	std::vector<GLubyte> idc;
-	for (int i = 0; i < 6; i++)
-		idc.push_back(indcs[i]);*/
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size()*sizeof(GLubyte), indices->data(), GL_STATIC_DRAW);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indcs), indcs, GL_STATIC_DRAW);
 
-}
 
-void Mesh::Clear() const
-{
-	if (vertices != NULL)
-		delete vertices;
-	if (indices != NULL)
-		delete indices;
 }

@@ -17,7 +17,8 @@ void ObjectRenderer::Render(Camera* camera)
 
 	for (auto i = 0; i < renderables.size();i++)
 	{
-		renderables[i]->Render(0);
+		renderables[i]->Render(modelLocation);
+		printf("dupa");
 	}
 }
 

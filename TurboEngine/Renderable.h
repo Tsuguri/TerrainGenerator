@@ -8,17 +8,18 @@
 #include "Mesh.h"
 #include "ShaderUtility.h"
 #include "D3Component.h"
+#include "Model.h"
 
 
 class Renderable : public D3Component
 {
 private:
 	glm::vec3 scale;
-	Mesh* mesh;
+	Model* model;
 	ShaderProgram* shader;
 	
 public:
-	Renderable(Mesh* mesh);
+	Renderable(Model* model);
 	void Render(GLint modelLocation);
 };
 

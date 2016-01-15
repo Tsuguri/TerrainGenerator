@@ -210,9 +210,8 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void GlWindow::LoadModels()
 {
 
-
-	Mesh* mesh = new Mesh("navigator2.obj");
-	Renderable* rend = new Renderable(mesh);
+	Model* model = new Model("Stormtrooper.obj");
+	Renderable* rend = new Renderable(model);
 	objRend->AddRenderable(rend);
 }
 

@@ -162,6 +162,7 @@
     <ClInclude Include="glew.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ObjectRenderer.h" />
     <ClInclude Include="Renderable.h" />
@@ -177,6 +178,7 @@
     <ClCompile Include="glew.c" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="ObjectRenderer.cpp" />
     <ClCompile Include="Renderable.cpp" />

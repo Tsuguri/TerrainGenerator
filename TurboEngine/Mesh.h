@@ -7,13 +7,15 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include "glew.h"
+
 struct Mesh
 {
 	int count;
 	unsigned int vao;
-	unsigned int vbo[2];
+	unsigned int vbo[3];
 	std::vector<Vertex>* vertices;
-	std::vector<int>* indices;
+	std::vector<GLubyte>* indices;
 public:
 	Mesh(char*);
 	Mesh(std::vector<Vertex>* verts);

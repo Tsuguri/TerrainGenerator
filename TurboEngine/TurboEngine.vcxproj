@@ -157,6 +157,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="D3Component.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="glew.h" />
     <ClInclude Include="GLWindow.h" />
@@ -171,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="D3Component.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glew.c" />
     <ClCompile Include="GLWindow.cpp" />

@@ -7,13 +7,12 @@
 #include "Vertex.h"
 #include "Mesh.h"
 #include "ShaderUtility.h"
+#include "D3Component.h"
 
 
-class Renderable
+class Renderable : public D3Component
 {
 private:
-	glm::vec3 position;
-	glm::vec3 rotation;
 	glm::vec3 scale;
 	Mesh* mesh;
 	ShaderProgram* shader;

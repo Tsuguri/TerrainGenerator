@@ -8,6 +8,8 @@
 class ObjectRenderer
 {
 private:
+	int width;
+	int height;
 	std::vector<Renderable*> renderables;
 	std::list<int> meshFreePlaces;
 

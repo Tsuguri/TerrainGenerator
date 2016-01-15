@@ -26,7 +26,15 @@ LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	return okno.WndProc(hWnd, message, wParam, lParam);
 }
-
+void TrackMouse(HWND hwnd)
+{
+	TRACKMOUSEEVENT tme;
+	tme.cbSize = sizeof(TRACKMOUSEEVENT);
+	tme.dwFlags = TME_HOVER | TME_LEAVE; //Type of events to track & trigger.
+	tme.dwHoverTime = 1; //How long the mouse has to be in the window to trigger a hover event.
+	tme.hwndTrack = hwnd;
+	TrackMouseEvent(&tme);
+}
 bool Window::Initialize(HINSTANCE applicationHandle, POINT windowPosition, POINT windowSize, bool fullScreen, bool resolutionChange)
 {
 	char windowName[] = "Turbo Engine";
@@ -74,8 +82,10 @@ bool Window::Initialize(HINSTANCE applicationHandle, POINT windowPosition, POINT
 		return false;
 	ShowWindow(windowHandle, SW_SHOW);
 	UpdateWindow(windowHandle);
+	//TrackMouse(windowHandle);
 	return true;
 }
+
 
 bool Window::ChangeResolution(long width, long height, long colorDepth) const
 {
@@ -88,8 +98,24 @@ bool Window::ChangeResolution(long width, long height, long colorDepth) const
 	dSS.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 	return ChangeDisplaySettings(&dSS, CDS_FULLSCREEN) == DISP_CHANGE_SUCCESSFUL;
 }
+
+void GlWindow::UpdateObjects(float deltaTime)
+{
+
+}
+
+void GlWindow::KeyDown(WPARAM wParam)
+{
+	keyPressed[wParam] = true;
+}
+
+void GlWindow::KeyUp(WPARAM wParam)
+{
+	keyPressed[wParam] = false;
+}
+
 //Main Loop
-WPARAM Window::Run()
+WPARAM GlWindow::Run()
 {
 	MSG msg;
 	long time = GetTickCount();
@@ -101,6 +127,9 @@ WPARAM Window::Run()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} //system messages handling
+		KeyControl(elapsed/1000.0f);
+		UpdateObjects(elapsed);
+		DrawScene();
 
 		// robienie rzeczy.
 
@@ -112,6 +141,50 @@ WPARAM Window::Run()
 
 	}
 	return msg.wParam;
+}
+
+void GlWindow::KeyControl(float time)
+{
+	if(keyPressed['A'])//A
+	{
+		
+		actualCamera->MoveByLocalVector(glm::vec3(10, 0, 0)*time);
+	}
+	if (keyPressed['S'])
+	{
+		actualCamera->MoveByLocalVector(glm::vec3(0, 0, -10)*time);
+	}
+	if (keyPressed['D'])//D
+	{
+		actualCamera->MoveByLocalVector(glm::vec3(-10, 0, 0)*time);
+	}
+	if (keyPressed['W'])
+	{
+		actualCamera->MoveByLocalVector(glm::vec3(0, 0, 10)*time);
+	}
+}
+
+void GlWindow::MouseMoved(LPARAM lParam, WPARAM wParam)
+{
+	POINT mousePos{ LOWORD(lParam),HIWORD(lParam) };
+	if (prevMousePos.x == -1)
+		prevMousePos = mousePos;
+	POINT move;
+	move.x = mousePos.x - prevMousePos.x;
+	move.y = mousePos.y - prevMousePos.y;
+	float movement = (float)sqrt(move.x*move.x + move.y*move.y);
+	if (movement > 3.0f)
+	{
+		float wsp = 180.0 / (float)windowWidth;
+		float wspY = 180.0 / (float)windowHeight;
+		float dx = move.x*wsp;
+		float dy = move.y*wspY;
+		if (wParam & MK_LBUTTON)
+		{
+			actualCamera->Rotate(-dx, -dy);
+		}
+		prevMousePos = mousePos;
+	}
 }
 
 LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -136,17 +209,9 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 void GlWindow::LoadModels()
 {
-	std::vector<Vertex>* verts = new std::vector<Vertex>();
-	Vertex vets[6];
-	vets[0] = Vertex(-1, -1, 0, 1, 1, 1, 0, 0);
-	vets[1] = Vertex(-1, 1, 0, 1, 1, 1, 0, 0);
-	vets[2] = Vertex(1, 1, 0, 1, 1, 1, 0, 0);
-	vets[3] = Vertex(-1, -1, 0, 1, 1, 1, 0, 0);
-	vets[4] = Vertex(1, 1, 0, 1, 1, 1, 0, 0);
-	vets[5] = Vertex(1, -1, 0, 1, 1, 1, 0, 0);
-	for (int i = 0; i < 6; i++)
-		verts->push_back(vets[i]);
-	Mesh* mesh = new Mesh(verts);
+
+
+	Mesh* mesh = new Mesh("navigator2.obj");
 	Renderable* rend = new Renderable(mesh);
 	objRend->AddRenderable(rend);
 }
@@ -265,14 +330,13 @@ LRESULT GlWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			throw 0;
 			return EXIT_FAILURE;
 		}
-		//shaderId = ShaderUtility::LoadShader("BasicVertex.vsh", "BasicFragment.fsh");
-		ShaderProgram* shad = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
-		if (shad->programId == 0)
+		ShaderProgram* shader = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
+		if (shader->programId == 0)
 			exit(EXIT_FAILURE);
 		SetBarInfo(hWnd);
-		objRend = new ObjectRenderer(windowWidth, windowHeight, shad);
-		actualCamera = new Camera(glm::vec3(0, 0, 3), glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), 1, 100, 45, 1920.0 / 1080.0);
+		objRend = new ObjectRenderer(windowWidth, windowHeight, shader);
 		LoadModels();
+		actualCamera = new Camera(glm::vec3(0, 0, -4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0.1f, 100.0f, 45);
 	}
 	break;
 	case WM_SIZE:
@@ -284,6 +348,23 @@ LRESULT GlWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		DrawScene();
 		ValidateRect(hWnd, NULL);
+		break;
+	case WM_KEYDOWN:
+		KeyDown(wParam);
+		break;
+	case WM_KEYUP:
+		KeyUp(wParam);
+		break;
+	case WM_MOUSEMOVE:
+		if (!mouseTracked)
+			TrackMouse(windowHandle);
+		MouseMoved(lParam, wParam);
+		break;
+	case WM_MOUSEHOVER:
+		prevMousePos = { -1,-1 };
+		break;
+	case WM_MOUSELEAVE:
+		prevMousePos = { -1,-1 };
 		break;
 	}
 	return result;

@@ -15,7 +15,7 @@ public:
 	Window() :windowHandle(nullptr) {};
 	bool Initialize(HINSTANCE applicationHandle, POINT windowPosition, POINT windowSize, bool fullScreen=false, bool resolutionChange=true);
 	bool ChangeResolution(long width, long height, long colorDepth=32) const;
-	WPARAM Run();
+
 	LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 };
 class GlWindow : public Window
@@ -30,8 +30,17 @@ private:
 	//unsigned int shaderId;
 	ObjectRenderer* objRend;
 	Camera* actualCamera;
-
+	void UpdateObjects(float);
+	POINT prevMousePos={-1,-1};
+	bool mouseTracked = false;
+	bool keyPressed[1024];
+	void KeyDown(WPARAM wParam);
+	void KeyUp(WPARAM wParam);
+	int p = (int)'A';
 public:
+	WPARAM Run();
+	void KeyControl(float time);
+	void MouseMoved(LPARAM lParam,WPARAM wParam);
 	GlWindow() : Window(), RCHandle(nullptr), DCHandle(nullptr) {};
 	bool SetPixelsFormat(HDC dcHandle) const;
 	bool InitializeGlW(HWND windowHandle);

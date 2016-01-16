@@ -4,7 +4,7 @@
 #include <list>
 #include "Camera.h"
 #include "Mesh.h"
-
+#include "Scene.h"
 class ObjectRenderer
 {
 private:
@@ -19,7 +19,8 @@ private:
 public:
 	ObjectRenderer(int windowWidth, int windowHeight, ShaderProgram* shader);
 	void ResizeWindow(int windowWidth, int windowHeight);
-	void Render(Camera* camera);
+	void Render(Camera* camera, Scene* scene);
+	void Animate(float time);
 	void AddRenderable(Renderable* renderable);
 
 

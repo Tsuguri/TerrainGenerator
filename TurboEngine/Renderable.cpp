@@ -19,5 +19,29 @@ void Renderable::Render(GLint modelLocation)
 	glBindVertexArray(mesh->vao);
 	glBindBuffer(GL_ARRAY_BUFFER,mesh->vbo[2]);
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(mat));
-	glDrawElements(GL_TRIANGLES, mesh->count, GL_UNSIGNED_BYTE, NULL);
+	glDrawElements(GL_TRIANGLES, mesh->count, GL_UNSIGNED_INT, NULL);
+}
+
+void Renderable::SetAnimation(Animation* anim)
+{
+	if (animation)
+		delete animation;
+	animation = anim;
+}
+
+void Renderable::Animate(float time)
+{
+	if (animation)
+		animation->Animate(this,time);
+}
+
+void Renderable::SetAnimationStart(bool val) const
+{
+	if (!animation)
+		return;
+	if (val)
+		animation->StartAnimation();
+	else
+		animation->StopAnimation();
+
 }

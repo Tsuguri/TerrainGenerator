@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <glm\glm.hpp>
 #include "ObjectRenderer.h"
+#include "Scene.h"
 
 class Window
 {
@@ -24,19 +25,17 @@ private:
 	HGLRC RCHandle;
 	HDC DCHandle;
 
-	//unsigned int vao;
-	//unsigned int vbo[3];
 	void LoadModels();
-	//unsigned int shaderId;
 	ObjectRenderer* objRend;
 	Camera* actualCamera;
+	Scene* actualLightning;
 	void UpdateObjects(float);
 	POINT prevMousePos={-1,-1};
 	bool mouseTracked = false;
 	bool keyPressed[1024];
 	void KeyDown(WPARAM wParam);
 	void KeyUp(WPARAM wParam);
-	int p = (int)'A';
+	bool shouldRender = true;
 public:
 	WPARAM Run();
 	void KeyControl(float time);
@@ -46,8 +45,10 @@ public:
 	bool InitializeGlW(HWND windowHandle);
 	void DeleteGlW();
 	void SetBarInfo(HWND windowHandle);
+	void SetScene();
 	//void SetScene(bool isometric=false);
 	void DrawScene();
+	void Animate(float time);
 	LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 } okno;
 

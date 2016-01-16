@@ -15,7 +15,7 @@ struct Mesh
 	unsigned int vao;
 	unsigned int vbo[3];
 	std::vector<Vertex>* vertices;
-	std::vector<GLubyte>* indices;
+	std::vector<GLuint>* indices;
 public:
 	Mesh(char*);
 	Mesh(std::vector<Vertex>* verts);

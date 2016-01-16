@@ -5,7 +5,7 @@
 
 Mesh::Mesh(char* path)
 {
-	indices = new std::vector<GLubyte>();
+	indices = new std::vector<GLuint>();
 	vertices = new std::vector<Vertex>();
 	count = 0;
 	Assimp::Importer import;
@@ -18,15 +18,16 @@ Mesh::Mesh(char* path)
 		return;
 	}
 	processNode(scene->mRootNode, scene);
+	count = indices->size();
 	SendToGPU();
 	Clear();
 }
 Mesh::Mesh(std::vector<Vertex>* verts)
 {
-	indices = new std::vector<GLubyte>();
+	indices = new std::vector<GLuint>();
 	vertices = verts;
 	for (int i = 0; i < vertices->size(); i++)
-		indices->push_back(i);
+		indices->push_back((unsigned int)i);
 	count = indices->size();
 	SendToGPU();
 	Clear();
@@ -90,9 +91,9 @@ void Mesh::processMesh(aiMesh* mesh, const aiScene* scene)
 	{
 		aiFace face = mesh->mFaces[i];
 		for (GLuint j = 0; j < face.mNumIndices; j++)
-			indices->push_back((GLubyte)face.mIndices[j]);
+			indices->push_back((GLuint)face.mIndices[j]);
 	}
-	count += indices->size();
+	
 }
 
 void Mesh::SendToGPU()
@@ -138,7 +139,7 @@ void Mesh::SendToGPU()
 	for (int i = 0; i < 6; i++)
 		idc.push_back(indcs[i]);*/
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo[2]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size()*sizeof(GLubyte), indices->data(), GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices->size()*sizeof(GLuint), indices->data(), GL_STATIC_DRAW);
 	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indcs), indcs, GL_STATIC_DRAW);
 
 }

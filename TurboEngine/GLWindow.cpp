@@ -7,6 +7,7 @@
 #include <vector>
 #include "Mesh.h"
 #include <time.h>
+#include "BezierPositionAnimation.h"
 
 LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -107,6 +108,8 @@ void GlWindow::UpdateObjects(float deltaTime)
 void GlWindow::KeyDown(WPARAM wParam)
 {
 	keyPressed[wParam] = true;
+	if (wParam == VK_F1 && actualLightning)
+		actualLightning->NextType();
 }
 
 void GlWindow::KeyUp(WPARAM wParam)
@@ -127,10 +130,11 @@ WPARAM GlWindow::Run()
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} //system messages handling
-		KeyControl(elapsed/1000.0f);
+		KeyControl(elapsed / 1000.0f);
 		UpdateObjects(elapsed);
-		DrawScene();
 
+		DrawScene();
+		Animate(elapsed);
 		// robienie rzeczy.
 
 		long actualTime = GetTickCount();
@@ -145,9 +149,9 @@ WPARAM GlWindow::Run()
 
 void GlWindow::KeyControl(float time)
 {
-	if(keyPressed['A'])//A
+	if (keyPressed['A'])//A
 	{
-		
+
 		actualCamera->MoveByLocalVector(glm::vec3(10, 0, 0)*time);
 	}
 	if (keyPressed['S'])
@@ -161,6 +165,14 @@ void GlWindow::KeyControl(float time)
 	if (keyPressed['W'])
 	{
 		actualCamera->MoveByLocalVector(glm::vec3(0, 0, 10)*time);
+	}
+	if (keyPressed[VK_SHIFT])
+	{
+		actualCamera->MoveByLocalVector(glm::vec3(0, -10, 0)*time);
+	}
+	if (keyPressed[VK_SPACE])
+	{
+		actualCamera->MoveByLocalVector(glm::vec3(0, 10, 0)*time);
 	}
 }
 
@@ -210,10 +222,17 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 void GlWindow::LoadModels()
 {
 
-
-	Mesh* mesh = new Mesh("navigator2.obj");
-	Renderable* rend = new Renderable(mesh);
-	objRend->AddRenderable(rend);
+	Renderable* rend;
+	Mesh* mesh = new Mesh("Stormtrooper.obj");
+	for (int i = 0; i < 10; i++)
+		for (int j = 0; j < 10; j++)
+		{
+			rend = new Renderable(mesh);
+			rend->SetAnimation(new BezierPositionAnimation(i * 10 + j));
+			//rend->SetAnimationStart(true);
+			rend->position = glm::vec3(i*2.0f, 0, j);
+			objRend->AddRenderable(rend);
+		}
 }
 
 
@@ -310,11 +329,30 @@ void GlWindow::SetBarInfo(HWND windowHandle)
 	SetWindowText(windowHandle, buffer);
 }
 
+void GlWindow::SetScene()
+{
+	ShaderProgram* shader = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
+	if (shader->programId == 0)
+		exit(EXIT_FAILURE);
+	objRend = new ObjectRenderer(windowWidth, windowHeight, shader);
+	LoadModels();
+	actualCamera = new Camera(glm::vec3(0, 0, -4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0.1f, 100.0f, 45);
+	actualLightning = new Scene(glm::vec3(0,3,3),glm::vec3(1,1,1),0);
+}
+
 void GlWindow::DrawScene()
 {
-	objRend->Render(actualCamera);
+	if (shouldRender)
+	{
+		objRend->Render(actualCamera, actualLightning);
+		SwapBuffers(DCHandle);
+	}
 
-	SwapBuffers(DCHandle);
+}
+
+void GlWindow::Animate(float time)
+{
+	objRend->Animate(time);
 }
 
 LRESULT GlWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -322,6 +360,16 @@ LRESULT GlWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	long result = Window::WndProc(hWnd, message, wParam, lParam);
 	switch (message)
 	{
+	//case WM_SYSCOMMAND:
+	//	if ((wParam & 0xFFF0) == SC_MINIMIZE)
+	//	{
+	//		shouldRender = false;
+	//	}
+	//	if ((wParam & 0xFFF0) == SC_MAXIMIZE)
+	//	{
+	//		shouldRender = true;
+	//	}
+	//	break;
 	case WM_CREATE:
 	{
 		if (!InitializeGlW(hWnd))
@@ -330,17 +378,16 @@ LRESULT GlWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			throw 0;
 			return EXIT_FAILURE;
 		}
-		ShaderProgram* shader = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
-		if (shader->programId == 0)
-			exit(EXIT_FAILURE);
 		SetBarInfo(hWnd);
-		objRend = new ObjectRenderer(windowWidth, windowHeight, shader);
-		LoadModels();
-		actualCamera = new Camera(glm::vec3(0, 0, -4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0.1f, 100.0f, 45);
+		SetScene();
 	}
 	break;
 	case WM_SIZE:
 		objRend->ResizeWindow(windowWidth, windowHeight);
+		if (windowWidth < 10 || windowHeight < 10)
+			shouldRender = false;
+		else
+			shouldRender = true;
 		break;
 	case WM_DESTROY:
 		DeleteGlW();

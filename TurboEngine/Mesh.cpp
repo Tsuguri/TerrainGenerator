@@ -3,35 +3,45 @@
 #include <vector>
 
 
-Mesh::Mesh(char* path)
-{
-	indices = new std::vector<GLuint>();
-	vertices = new std::vector<Vertex>();
-	count = 0;
-	Assimp::Importer import;
-	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+//Mesh::Mesh(char* path)
+//{
+//	indices = new std::vector<GLuint>();
+//	vertices = new std::vector<Vertex>();
+//	count = 0;
+//	Assimp::Importer import;
+//	const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+//
+//	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+//	{
+//		//throw 0;
+//		//cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
+//		return;
+//	}
+//	processNode(scene->mRootNode, scene);
+//	count = indices->size();
+//	SendToGPU();
+//	Clear();
+//}
 
-	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
-	{
-		//throw 0;
-		//cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
-		return;
-	}
-	processNode(scene->mRootNode, scene);
-	count = indices->size();
-	SendToGPU();
-	Clear();
-}
-Mesh::Mesh(std::vector<Vertex>* verts)
+Mesh::Mesh(std::vector<Vertex> verts, std::vector<GLuint> indices)
 {
-	indices = new std::vector<GLuint>();
-	vertices = verts;
-	for (int i = 0; i < vertices->size(); i++)
-		indices->push_back((unsigned int)i);
-	count = indices->size();
+	this->indices = &indices;
+	this->vertices = &verts;
+	count = this->indices->size();
 	SendToGPU();
 	Clear();
 }
+
+//Mesh::Mesh(std::vector<Vertex>* verts)
+//{
+//	indices = new std::vector<GLuint>();
+//	vertices = verts;
+//	for (int i = 0; i < vertices->size(); i++)
+//		indices->push_back((unsigned int)i);
+//	count = indices->size();
+//	SendToGPU();
+//	Clear();
+//}
 
 Mesh::~Mesh()
 {
@@ -50,51 +60,59 @@ int Mesh::GetCount() const
 	return count;
 }
 
-void Mesh::processNode(aiNode* node, const aiScene* scene)
+void Mesh::Render()
 {
-	for (GLuint i = 0; i < node->mNumMeshes; i++)
-	{
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		processMesh(mesh, scene);
-	}
-
-	for (GLuint i = 0; i < node->mNumChildren; i++)
-	{
-		processNode(node->mChildren[i], scene);
-	}
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo[2]);
+	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, NULL);
 }
-void Mesh::processMesh(aiMesh* mesh, const aiScene* scene)
-{
-	float x, y, z, s = 0, q = 0, p = 0, u = 0, v = 0;
 
-	for (GLuint i = 0; i < mesh->mNumVertices; i++)
-	{
-		x = mesh->mVertices[i].x;
-		y = mesh->mVertices[i].y;
-		z = mesh->mVertices[i].z;
-		if (mesh->mNormals) // Does the mesh contain texture coordinates?
-		{
-			s = mesh->mNormals[i].x;
-			q = mesh->mNormals[i].y;
-			p = mesh->mNormals[i].z;
-		}
-		if (mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?
-		{
-			u = mesh->mTextureCoords[0][i].x;
-			v = mesh->mTextureCoords[0][i].y;
-		}
-		Vertex vex(x, y, z, s, q, p, u, v);
-		vertices->push_back(vex);
-
-	}
-	for (GLuint i = 0; i < mesh->mNumFaces; i++)
-	{
-		aiFace face = mesh->mFaces[i];
-		for (GLuint j = 0; j < face.mNumIndices; j++)
-			indices->push_back((GLuint)face.mIndices[j]);
-	}
-	
-}
+//void Mesh::processNode(aiNode* node, const aiScene* scene)
+//{
+//	for (GLuint i = 0; i < node->mNumMeshes; i++)
+//	{
+//		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+//		processMesh(mesh, scene);
+//	}
+//
+//	for (GLuint i = 0; i < node->mNumChildren; i++)
+//	{
+//		processNode(node->mChildren[i], scene);
+//	}
+//}
+//void Mesh::processMesh(aiMesh* mesh, const aiScene* scene)
+//{
+//	float x, y, z, s = 0, q = 0, p = 0, u = 0, v = 0;
+//
+//	for (GLuint i = 0; i < mesh->mNumVertices; i++)
+//	{
+//		x = mesh->mVertices[i].x;
+//		y = mesh->mVertices[i].y;
+//		z = mesh->mVertices[i].z;
+//		if (mesh->mNormals) // Does the model contain texture coordinates?
+//		{
+//			s = mesh->mNormals[i].x;
+//			q = mesh->mNormals[i].y;
+//			p = mesh->mNormals[i].z;
+//		}
+//		if (mesh->mTextureCoords[0]) // Does the model contain texture coordinates?
+//		{
+//			u = mesh->mTextureCoords[0][i].x;
+//			v = mesh->mTextureCoords[0][i].y;
+//		}
+//		Vertex vex(x, y, z, s, q, p, u, v);
+//		vex.standarizedNormal = glm::vec3(s, q, p);
+//		vertices->push_back(vex);
+//
+//	}
+//	for (GLuint i = 0; i < mesh->mNumFaces; i++)
+//	{
+//		aiFace face = mesh->mFaces[i];
+//		for (GLuint j = 0; j < face.mNumIndices; j++)
+//			indices->push_back((GLuint)face.mIndices[j]);
+//	}
+//	
+//}
 
 void Mesh::SendToGPU()
 {
@@ -126,12 +144,15 @@ void Mesh::SendToGPU()
 
 
 	GLuint positionAtt = 0;
-	GLuint colorAtt = 3;
+	GLuint normalAtt = 3;
+	GLuint standardNormalAtt = 1;
 
 	glVertexAttribPointer(positionAtt, Vertex::PositionCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, 0);
 	glEnableVertexAttribArray(positionAtt);
-	glVertexAttribPointer(colorAtt, Vertex::NormalCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, (const GLvoid*)Vertex::PositionSize);
-	glEnableVertexAttribArray(colorAtt);
+	glVertexAttribPointer(normalAtt, Vertex::NormalCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, (const GLvoid*)Vertex::PositionSize);
+	glEnableVertexAttribArray(normalAtt);
+	glVertexAttribPointer(standardNormalAtt, Vertex::StandardNormalCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, (const GLvoid*)(Vertex::PositionSize+Vertex::NormalSize));
+	glEnableVertexAttribArray(standardNormalAtt);
 	glBindBuffer(GL_ARRAY_BUFFER, NULL);
 
 	/*GLubyte indcs[] = { 0,1,3,0,3,2,1,5,7,1,7,3,4,0,2,4,2,6,2,3,7,2,7,6,4,5,1,4,1,0,5,4,6,5,6,7 };
@@ -146,8 +167,8 @@ void Mesh::SendToGPU()
 
 void Mesh::Clear() const
 {
-	if (vertices != NULL)
+	/*if (vertices != NULL)
 		delete vertices;
 	if (indices != NULL)
-		delete indices;
+		delete indices;*/
 }

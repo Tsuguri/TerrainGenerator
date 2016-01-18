@@ -1,37 +1,35 @@
 #include "Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 glm::mat4 Camera::GetViewMatrix()
 {
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y));
-	direction.y = sin(glm::radians(rotation.x));
-	direction.z = cos(glm::radians(rotation.x)) * sin(glm::radians(rotation.y));
-	return glm::lookAt(position,position+direction , up);
+	return glm::lookAt(globalPosition, globalPosition + cameraFront, glm::vec3(0, 1, 0));
 }
 
 glm::mat4 Camera::GetProjectionMatrix(float asp)
 {
-	return glm::perspective(fov, 1/asp, nr, fr);
+	return glm::perspective(glm::radians(fov), 1 / asp, nr, fr);
 }
 
-void Camera::MoveByLocalVector(glm::vec3 vector)
-{
-	glm::mat4 mat(1.0f);
+//void Camera::MoveByLocalVector(glm::vec3 vector)
+//{
+//	glm::mat4 mat = glm::toMat4(rotation);
+//	glm::vec4 v = mat*glm::vec4(vector.x, vector.y, vector.z, 0);
+//	SetLocalPosition(position + glm::vec3(v.x, v.y, v.z));
+//}
 
-	mat = glm::rotate(mat, glm::radians(-rotation.y+90), glm::vec3(0, 1, 0));
-	mat = glm::rotate(mat, glm::radians(-rotation.x), glm::vec3(1, 0, 0));
-	glm::vec4 v = mat*glm::vec4(vector.x, vector.y, vector.z, 0);
-	position += glm::vec3(v.x, v.y, v.z);
+void Camera::Rotate(float yaw, float pitch,float roll)
+{
+	//x = glm::degrees(glm::pitch(rotation));
+	//y = glm::degrees(glm::yaw(rotation));
+	D3Component::Rotate(yaw, pitch, roll);
+	cameraFront = rotation*glm::vec3(0, 0, 1.0f);
 }
 
-void Camera::Rotate(float dx, float dy)
+void Camera::ActualizePosition()
 {
-	rotation.x += dy;
-	rotation.y+=dx;
-	if (rotation.x > 89.0f)
-		rotation.x = 89.0f;
-	if (rotation.x < -89.0f)
-		rotation.x = -89.0f;
+	D3Component::ActualizePosition();
+	cameraFront = rotation*glm::vec3(0, 0, 1.0f);
 }

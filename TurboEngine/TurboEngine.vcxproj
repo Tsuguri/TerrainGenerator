@@ -73,6 +73,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Users\adamo\Documents\libraries;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\adamo\Documents\libraries;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>C:\Users\adamo\Documents\libraries;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -164,6 +165,7 @@
     <ClInclude Include="glew.h" />
     <ClInclude Include="GLWindow.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ObjectRenderer.h" />
     <ClInclude Include="PseudoBezierCurve.h" />
@@ -183,6 +185,7 @@
     <ClCompile Include="glew.c" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="ObjectRenderer.cpp" />
     <ClCompile Include="PseudoBezierCurve.cpp" />

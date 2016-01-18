@@ -7,6 +7,7 @@
 
 void ObjectRenderer::Render(Camera* camera, Scene* scene)
 {
+	//glm::vec3 col = camera->GetGlobalPosition();
 	glClearColor(0.2f, 0.33f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	program->SetAsActive();
@@ -29,7 +30,7 @@ void ObjectRenderer::Render(Camera* camera, Scene* scene)
 		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
 		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix(height / (float)width)));
 		GLint cameraPosLocation = glGetUniformLocation(program->programId, "cameraPosition");
-		glUniform3fv(cameraPosLocation, 1, glm::value_ptr(camera->position));
+		glUniform3fv(cameraPosLocation, 1, glm::value_ptr(camera->GetGlobalPosition()));
 	}
 
 	for (auto i = 0; i < renderables.size(); i++)

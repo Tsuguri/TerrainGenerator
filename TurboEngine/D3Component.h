@@ -14,17 +14,24 @@ protected:
 	glm::vec3 position;
 	glm::vec3 globalPosition;
 	glm::quat rotation;
+	glm::quat localRotation;
+	float x, y,z;
 	std::vector<D3Component*> childs;
+	virtual void ActualizePosition();
 public:
 	void SetLocalPosition(glm::vec3 position);
 	glm::vec3 GetLocalPostion();
+	glm::vec3 GetGlobalPosition();
+	glm::quat GetLocalRotation();
+	glm::quat GetGlobalRotation();
 
+	void SetLocalRotationEuler(glm::vec3 rotation);
 	void SetRotation(glm::quat rotation);
 	void SetRotationEulerRadians(glm::vec3 rotation);
 
 	void MoveByVector(glm::vec3 vector);
 	virtual void MoveByLocalVector(glm::vec3 vector);
-	virtual void Rotate(float dx, float dy);
+	virtual void Rotate(float yaw, float pitch, float roll);
 
 	void AddChild(D3Component* child);
 	void RemoveChild(D3Component* child);

@@ -17,14 +17,15 @@ struct Mesh
 	std::vector<Vertex>* vertices;
 	std::vector<GLuint>* indices;
 public:
-	Mesh(char*);
-	Mesh(std::vector<Vertex>* verts);
+//	Mesh(char*);
+	Mesh(std::vector<Vertex> verts,std::vector<GLuint> indices);
 	~Mesh();
 	void Dispose();
 	int GetCount() const;
+	void Render();
 private:
-	void processNode(aiNode* node, const aiScene* scene);
-	void processMesh(aiMesh* mesh, const aiScene* scene);
+//	void processNode(aiNode* node, const aiScene* scene);
+//	void processMesh(aiMesh* mesh, const aiScene* scene);
 	void SendToGPU();
 	void Clear() const;
 };

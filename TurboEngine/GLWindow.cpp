@@ -111,6 +111,20 @@ void GlWindow::KeyDown(WPARAM wParam)
 	keyPressed[wParam] = true;
 	if (wParam == VK_F1 && actualLightning)
 		actualLightning->NextType();
+	if (wParam == VK_F3)
+		NextCamera();
+	if (wParam == VK_F4)
+		actualCamera->fov += 1;
+	if (wParam == VK_F5)
+		actualCamera->fov -= 1;
+	if (wParam == VK_F2)
+	{
+
+		if (!raceStarted)
+			StartRace();
+		else
+			StopRace();
+	}
 }
 
 void GlWindow::KeyUp(WPARAM wParam)
@@ -150,31 +164,53 @@ WPARAM GlWindow::Run()
 
 void GlWindow::KeyControl(float time)
 {
-	if (keyPressed['A'])//A
+	if (cameraIndex == 0)
 	{
-
-		actualCamera->MoveByLocalVector(glm::vec3(10, 0, 0)*time);
+		if (keyPressed['A'])//A
+		{
+			actualCamera->MoveByLocalVector(glm::vec3(10, 0, 0)*time);
+		}
+		if (keyPressed['S'])
+		{
+			actualCamera->MoveByLocalVector(glm::vec3(0, 0, -10)*time);
+		}
+		if (keyPressed['D'])//D
+		{
+			actualCamera->MoveByLocalVector(glm::vec3(-10, 0, 0)*time);
+		}
+		if (keyPressed['W'])
+		{
+			actualCamera->MoveByLocalVector(glm::vec3(0, 0, 10)*time);
+		}
+		if (keyPressed[VK_SHIFT])
+		{
+			actualCamera->MoveByLocalVector(glm::vec3(0, -10, 0)*time);
+		}
+		if (keyPressed[VK_SPACE])
+		{
+			actualCamera->MoveByLocalVector(glm::vec3(0, 10, 0)*time);
+		}
 	}
-	if (keyPressed['S'])
+	else
 	{
-		actualCamera->MoveByLocalVector(glm::vec3(0, 0, -10)*time);
+		if (keyPressed['A'])//A
+		{
+			userCar->Rotate(90.0f * time, 0, 0);
+		}
+		if (keyPressed['S'])
+		{
+			userCar->MoveByLocalVector(glm::vec3(0, 0, -10)*time);
+		}
+		if (keyPressed['D'])//D
+		{
+			userCar->Rotate(-90.0f * time, 0,0);
+		}
+		if (keyPressed['W'])
+		{
+			userCar->MoveByLocalVector(glm::vec3(0, 0, 10)*time);
+		}
 	}
-	if (keyPressed['D'])//D
-	{
-		actualCamera->MoveByLocalVector(glm::vec3(-10, 0, 0)*time);
-	}
-	if (keyPressed['W'])
-	{
-		actualCamera->MoveByLocalVector(glm::vec3(0, 0, 10)*time);
-	}
-	if (keyPressed[VK_SHIFT])
-	{
-		actualCamera->MoveByLocalVector(glm::vec3(0, -10, 0)*time);
-	}
-	if (keyPressed[VK_SPACE])
-	{
-		actualCamera->MoveByLocalVector(glm::vec3(0, 10, 0)*time);
-	}
+	temp = NULL;
 }
 
 void GlWindow::MouseMoved(LPARAM lParam, WPARAM wParam)
@@ -188,16 +224,46 @@ void GlWindow::MouseMoved(LPARAM lParam, WPARAM wParam)
 	float movement = (float)sqrt(move.x*move.x + move.y*move.y);
 	if (movement > 3.0f)
 	{
-		float wsp = 180.0 / (float)windowWidth;
-		float wspY = 180.0 / (float)windowHeight;
-		float dx = move.x*wsp;
-		float dy = move.y*wspY;
-		if (wParam & MK_LBUTTON)
+		if (cameraIndex != 1)
 		{
-			actualCamera->Rotate(-dx, -dy);
+			float wsp = 0.1f;
+			float dx = move.x*wsp;
+			float dy = move.y*wsp*2.0f;
+			if (wParam & MK_LBUTTON)
+			{
+				actualCamera->Rotate(dx, dy,0);
+			}
 		}
 		prevMousePos = mousePos;
 	}
+}
+
+void GlWindow::StartRace()
+{
+	if (raceStarted)
+		return;
+	for (auto car : cars)
+	{
+		car->SetAnimationStart(true);
+	}
+	raceStarted = true;
+}
+
+void GlWindow::StopRace()
+{
+	if (!raceStarted)
+		return;
+	for (auto car : cars)
+	{
+		car->SetAnimationStart(false);
+	}
+	raceStarted = false;
+}
+
+void GlWindow::NextCamera()
+{
+	cameraIndex = (cameraIndex + 1) % cameras.size();
+	actualCamera = cameras[cameraIndex];
 }
 
 LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -219,50 +285,88 @@ LRESULT Window::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	return 0L;
 }
+std::vector<std::vector<glm::vec3>> makePaths()
+{
+	std::vector<std::vector<glm::vec3>> paths;
+
+	std::vector<glm::vec3> path1;
+	path1.push_back(glm::vec3(18, 0, 0));
+	path1.push_back(glm::vec3(20, 0, 48));
+	path1.push_back(glm::vec3(16, 0, 93));
+	path1.push_back(glm::vec3(22, 0, 105));
+	path1.push_back(glm::vec3(30, 0, 99));
+	path1.push_back(glm::vec3(38, 0, 60));
+	path1.push_back(glm::vec3(42, 0, 21));
+	path1.push_back(glm::vec3(30, 0, 0));
+	paths.push_back(path1);
+
+	std::vector<glm::vec3> path2;
+	path2.push_back(glm::vec3(12, 0, 0));
+	path2.push_back(glm::vec3(12, 0, 39));
+	path2.push_back(glm::vec3(10, 0, 78));
+	path2.push_back(glm::vec3(12, 0, 96));
+	path2.push_back(glm::vec3(14, 0, 105));
+	path2.push_back(glm::vec3(20, 0, 111));
+	path2.push_back(glm::vec3(30, 0, 105));
+	path2.push_back(glm::vec3(38, 0, 87));
+	path2.push_back(glm::vec3(44, 0, 60));
+	path2.push_back(glm::vec3(48, 0, 36));
+	path2.push_back(glm::vec3(46, 0, 21));
+	path2.push_back(glm::vec3(40, 0, 0));
+	paths.push_back(path2);
+
+	std::vector<glm::vec3> path3;
+	path3.push_back(glm::vec3(6, 0, 0));
+	path3.push_back(glm::vec3(6, 0, 24));
+	path3.push_back(glm::vec3(4, 0, 45));
+	path3.push_back(glm::vec3(6, 0, 78));
+	path3.push_back(glm::vec3(10, 0, 102));
+	path3.push_back(glm::vec3(14, 0, 108));
+	path3.push_back(glm::vec3(18, 0, 111));
+	path3.push_back(glm::vec3(26, 0, 114));
+	path3.push_back(glm::vec3(36, 0, 108));
+	path3.push_back(glm::vec3(40, 0, 93));
+	path3.push_back(glm::vec3(36, 0, 84));
+	path3.push_back(glm::vec3(32, 0, 69));
+	path3.push_back(glm::vec3(30, 0, 51));
+	path3.push_back(glm::vec3(32, 0, 21));
+	path3.push_back(glm::vec3(32, 0, 0));
+
+	paths.push_back(path3);
+
+
+
+	return paths;
+}
 
 void GlWindow::LoadModels()
 {
+	Renderable* temp;
+	Model* model = new Model("Nissan.3DS");
+	std::vector<Renderable*> models;
+	std::vector<std::vector<glm::vec3>> paths = makePaths();
+	int i = 1;
+	for (auto path : paths)
+	{
+		temp = new Renderable(model);
+		temp->SetLocalPosition(glm::vec3(i*6.0f, 0, 0));
+		temp->SetScale(glm::vec3(0.01f));
+		//parent->SetLocalRotationEuler(-glm::vec3(glm::pi<float>() / 2, 0, 0));
+		temp->SetAnimation(new CurveAnimation(path, 20.0f));
+		objRend->AddRenderable(temp);
+		cars.push_back(temp);
+		i++;
+	}
+	temp = new Renderable(model);
+	temp->SetLocalPosition(glm::vec3(0, 0, 0));
+	temp->SetScale(glm::vec3(0.01f));
+	objRend->AddRenderable(temp);
+	cameras[2]->SetParent(temp);
+	cameras[2]->SetLocalPosition(glm::vec3(0,2,-3));
+	userCar = temp;
 
-	Renderable* rend;
-	Renderable* parent;
-	Mesh* mesh = new Mesh("stormtrooper.obj");
-	for (int i = 0; i < 10; i++)
-	{
-		for (int j = 1; j < 10; j++)
-		{
-			rend = new Renderable(mesh);
-			rend->SetAnimation(new BezierPositionAnimation(i * 10 + j));
-			rend->SetAnimationStart(true);
-			rend->SetLocalPosition( glm::vec3(i*2.0f, 0, j));
-			objRend->AddRenderable(rend);
-		}
-	}
-	parent = new Renderable(mesh);
-	std::vector<glm::vec3> points;
-	points.push_back(glm::vec3(20, 0, 0));
-	points.push_back(glm::vec3(22, 0, 2));
-	points.push_back(glm::vec3(24, 0, 2));
-	points.push_back(glm::vec3(26, 0, 0));
-	points.push_back(glm::vec3(26, 0, -2));
-	points.push_back(glm::vec3(24, 0, -4));
-	points.push_back(glm::vec3(23, 0, -4));
-	points.push_back(glm::vec3(20, 0, -2));
-	parent->SetAnimation(new CurveAnimation(points,3));
-	parent->SetAnimationStart(true);
-	parent->SetLocalPosition(glm::vec3(22.0f, 0, 0));
-	//parent->SetScale(glm::vec3(2));
-	//parent->SetRotationEulerRadians(glm::vec3(3.14f, 0, 0));
-	objRend->AddRenderable(parent);
-	for (int j = 1; j < 10; j++)
-	{
-		rend = new Renderable(mesh);
-		rend->SetAnimation(new BezierPositionAnimation(22 + j));
-		rend->SetAnimationStart(true);
-		rend->SetLocalPosition(glm::vec3(0, 0, 1));
-		rend->SetParent(parent);
-		objRend->AddRenderable(rend);
-		parent = rend;
-	}
+	//parent = new Renderable(model);
+
 }
 
 
@@ -365,9 +469,13 @@ void GlWindow::SetScene()
 	if (shader->programId == 0)
 		exit(EXIT_FAILURE);
 	objRend = new ObjectRenderer(windowWidth, windowHeight, shader);
+	cameras.push_back(new Camera(glm::vec3(0, 0, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 60));
+	cameras.push_back(new Camera(glm::vec3(20, 65, 50), glm::quat(glm::vec3(glm::radians(89.0f), glm::radians(90.0f), 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 60));
+	cameras.push_back(new Camera(glm::vec3(20, 65, 50), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 60));
+	cameraIndex = 0;
+	actualCamera = cameras[0];
 	LoadModels();
-	actualCamera = new Camera(glm::vec3(0, 0, -4), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), 0.1f, 100.0f, 45);
-	actualLightning = new Scene(glm::vec3(0,3,3),glm::vec3(1,1,1),0);
+	actualLightning = new Scene(glm::vec3(0, 3, 3), glm::vec3(1, 1, 1), 0);
 }
 
 void GlWindow::DrawScene()
@@ -390,16 +498,16 @@ LRESULT GlWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	long result = Window::WndProc(hWnd, message, wParam, lParam);
 	switch (message)
 	{
-	//case WM_SYSCOMMAND:
-	//	if ((wParam & 0xFFF0) == SC_MINIMIZE)
-	//	{
-	//		shouldRender = false;
-	//	}
-	//	if ((wParam & 0xFFF0) == SC_MAXIMIZE)
-	//	{
-	//		shouldRender = true;
-	//	}
-	//	break;
+		//case WM_SYSCOMMAND:
+		//	if ((wParam & 0xFFF0) == SC_MINIMIZE)
+		//	{
+		//		shouldRender = false;
+		//	}
+		//	if ((wParam & 0xFFF0) == SC_MAXIMIZE)
+		//	{
+		//		shouldRender = true;
+		//	}
+		//	break;
 	case WM_CREATE:
 	{
 		if (!InitializeGlW(hWnd))

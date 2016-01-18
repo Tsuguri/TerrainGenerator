@@ -1,6 +1,24 @@
 #include "D3Component.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
+#include <glm/gtx/quaternion.hpp>
+
+void D3Component::ActualizePosition()
+{
+	this->globalPosition = position;
+	if (parent)
+	{
+		glm::vec4 temp = glm::toMat4(parent->GetGlobalRotation())*glm::vec4(position.x, position.y, position.z, 0.0f);
+		globalPosition = glm::vec3(temp.x, temp.y, temp.z);
+		globalPosition += parent->globalPosition;
+
+		localRotation = glm::quat(glm::vec3(glm::radians(x), glm::radians(y), glm::radians(z)));
+		localRotation = glm::normalize(localRotation);
+		rotation = localRotation;
+		if (parent)
+			rotation *= parent->GetGlobalRotation();
+	}
+}
 
 void D3Component::SetLocalPosition(glm::vec3 position)
 {
@@ -8,11 +26,34 @@ void D3Component::SetLocalPosition(glm::vec3 position)
 	globalPosition = this->position;
 	if (parent)
 		globalPosition += parent->globalPosition;
+	for (auto child : childs)
+	{
+		child->ActualizePosition();
+	}
 }
 
 glm::vec3 D3Component::GetLocalPostion()
 {
 	return position;
+}
+
+glm::vec3 D3Component::GetGlobalPosition()
+{
+	return globalPosition;
+}
+
+glm::quat D3Component::GetLocalRotation()
+{
+	return localRotation;
+}
+glm::quat D3Component::GetGlobalRotation()
+{
+	return rotation;
+}
+
+void D3Component::SetLocalRotationEuler(glm::vec3 rotation)
+{
+	this->localRotation = glm::quat(rotation);
 }
 
 void D3Component::SetRotation(glm::quat rotation)
@@ -27,25 +68,39 @@ void D3Component::SetRotationEulerRadians(glm::vec3 rotation)
 
 void D3Component::MoveByVector(glm::vec3 vector)
 {
-
+	throw -1;
 }
 
 void D3Component::MoveByLocalVector(glm::vec3 vector)
 {
-	glm::mat4 mat(1.0f);
-
-	mat = glm::rotate(mat, glm::radians(-rotation.y + 90), glm::vec3(0, 1, 0));
-	mat = glm::rotate(mat, glm::radians(-rotation.x), glm::vec3(1, 0, 0));
+	glm::mat4 mat = glm::toMat4(rotation);
 	glm::vec4 v = mat*glm::vec4(vector.x, vector.y, vector.z, 0);
-	position += glm::vec3(v.x, v.y, v.z);
-	globalPosition = position;
-	if (parent)
-		globalPosition += parent->position;
+	SetLocalPosition(position + glm::vec3(v.x, v.y, v.z));
 }
 
-void D3Component::Rotate(float dx, float dy)
+void D3Component::Rotate(float yaw, float pitch, float roll )
 {
+	x += pitch;
+	y += yaw;
+	z += roll;
+	if (x > 89.0f)
+		x = 89.0f;
+	if (x < -89.0f)
+		x = -89.0f;
+	if (y > 180.0f)
+		y -= 360.0f;
+	if (y < -180.0f)
+		y += 360.0f;
 
+	localRotation = glm::quat(glm::vec3(glm::radians(x), glm::radians(y), glm::radians(z)));
+	localRotation = glm::normalize(localRotation);
+	rotation = localRotation;
+	if (parent)
+		rotation *= parent->GetGlobalRotation();
+	for (auto child : childs)
+	{
+		child->ActualizePosition();
+	}
 }
 void D3Component::AddChild(D3Component* child)
 {

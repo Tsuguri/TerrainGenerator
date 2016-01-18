@@ -27,6 +27,13 @@ private:
 
 	void LoadModels();
 	ObjectRenderer* objRend;
+	std::vector<Renderable*> cars;
+	bool raceStarted = false;
+	int cameraIndex;
+	std::vector<Camera*> cameras;
+	D3Component* temp;
+	Renderable* userCar;
+
 	Camera* actualCamera;
 	Scene* actualLightning;
 	void UpdateObjects(float);
@@ -38,17 +45,26 @@ private:
 	bool shouldRender = true;
 public:
 	WPARAM Run();
+
 	void KeyControl(float time);
 	void MouseMoved(LPARAM lParam,WPARAM wParam);
+	void StartRace();
+	void StopRace();
+	
+	void NextCamera();
+
 	GlWindow() : Window(), RCHandle(nullptr), DCHandle(nullptr) {};
 	bool SetPixelsFormat(HDC dcHandle) const;
 	bool InitializeGlW(HWND windowHandle);
 	void DeleteGlW();
 	void SetBarInfo(HWND windowHandle);
+
 	void SetScene();
-	//void SetScene(bool isometric=false);
 	void DrawScene();
 	void Animate(float time);
+
+
+
 	LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 } okno;
 

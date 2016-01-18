@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include <time.h>
 #include "BezierPositionAnimation.h"
+#include "CurveAnimation.h"
 
 LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -223,16 +224,45 @@ void GlWindow::LoadModels()
 {
 
 	Renderable* rend;
-	Mesh* mesh = new Mesh("Stormtrooper.obj");
+	Renderable* parent;
+	Mesh* mesh = new Mesh("stormtrooper.obj");
 	for (int i = 0; i < 10; i++)
-		for (int j = 0; j < 10; j++)
+	{
+		for (int j = 1; j < 10; j++)
 		{
 			rend = new Renderable(mesh);
 			rend->SetAnimation(new BezierPositionAnimation(i * 10 + j));
-			//rend->SetAnimationStart(true);
-			rend->position = glm::vec3(i*2.0f, 0, j);
+			rend->SetAnimationStart(true);
+			rend->SetLocalPosition( glm::vec3(i*2.0f, 0, j));
 			objRend->AddRenderable(rend);
 		}
+	}
+	parent = new Renderable(mesh);
+	std::vector<glm::vec3> points;
+	points.push_back(glm::vec3(20, 0, 0));
+	points.push_back(glm::vec3(22, 0, 2));
+	points.push_back(glm::vec3(24, 0, 2));
+	points.push_back(glm::vec3(26, 0, 0));
+	points.push_back(glm::vec3(26, 0, -2));
+	points.push_back(glm::vec3(24, 0, -4));
+	points.push_back(glm::vec3(23, 0, -4));
+	points.push_back(glm::vec3(20, 0, -2));
+	parent->SetAnimation(new CurveAnimation(points,3));
+	parent->SetAnimationStart(true);
+	parent->SetLocalPosition(glm::vec3(22.0f, 0, 0));
+	//parent->SetScale(glm::vec3(2));
+	//parent->SetRotationEulerRadians(glm::vec3(3.14f, 0, 0));
+	objRend->AddRenderable(parent);
+	for (int j = 1; j < 10; j++)
+	{
+		rend = new Renderable(mesh);
+		rend->SetAnimation(new BezierPositionAnimation(22 + j));
+		rend->SetAnimationStart(true);
+		rend->SetLocalPosition(glm::vec3(0, 0, 1));
+		rend->SetParent(parent);
+		objRend->AddRenderable(rend);
+		parent = rend;
+	}
 }
 
 

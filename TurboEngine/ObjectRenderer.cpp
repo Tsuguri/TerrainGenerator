@@ -34,7 +34,7 @@ void ObjectRenderer::Render(Camera* camera, Scene* scene)
 
 	for (auto i = 0; i < renderables.size(); i++)
 	{
-		renderables[i]->Render(modelLocation);
+			renderables[i]->Render(modelLocation);
 	}
 }
 
@@ -42,7 +42,8 @@ void ObjectRenderer::Animate(float time)
 {
 	for (auto obj : renderables)
 	{
-		obj->Animate(time);
+		if (!obj->HasParent())
+			obj->Animate(time);
 	}
 }
 

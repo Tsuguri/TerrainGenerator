@@ -21,5 +21,7 @@ void BezierPositionAnimation::Animate(D3Component* object,float time)
 	if (!shouldAnimate)
 		return;
 	timePassed += time/300.0f;
-	object->position.y = sin(timePassed);
+	glm::vec3 pos = object->GetLocalPostion();
+	pos.y = sin(timePassed);
+	object->SetLocalPosition(pos);
 }

@@ -19,6 +19,9 @@
     <Filter Include="Systems">
       <UniqueIdentifier>{14eef669-9df7-4827-b862-a0197eee7574}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Animations">
+      <UniqueIdentifier>{4bad2c30-a765-4b63-9e75-44ba715d0da3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLWindow.h">
@@ -66,11 +69,11 @@
     <ClInclude Include="PseudoBezierCurve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="BezierPositionAnimation.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="CurveAnimation.h">
+      <Filter>Header Files\Animations</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +114,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BezierPositionAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CurveAnimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

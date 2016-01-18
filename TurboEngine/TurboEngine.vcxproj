@@ -156,9 +156,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Animation.h" />
     <ClInclude Include="BezierPositionAnimation.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CurveAnimation.h" />
     <ClInclude Include="D3Component.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="glew.h" />
@@ -177,6 +177,7 @@
   <ItemGroup>
     <ClCompile Include="BezierPositionAnimation.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CurveAnimation.cpp" />
     <ClCompile Include="D3Component.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glew.c" />

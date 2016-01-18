@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Animation.h"
+#include "D3Component.h"
 
 class BezierPositionAnimation : public Animation
 {

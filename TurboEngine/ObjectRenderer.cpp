@@ -12,7 +12,7 @@ void ObjectRenderer::Render(Camera* camera, Scene* scene)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	program->SetAsActive();
 	GLint modelLocation = glGetUniformLocation(program->programId, "ModelMat");
-
+	GLint colorLocation = glGetUniformLocation(program->programId, "defaultColor");
 	if (scene)
 	{
 		GLint lightLocation = glGetUniformLocation(program->programId, "lightType");
@@ -35,7 +35,7 @@ void ObjectRenderer::Render(Camera* camera, Scene* scene)
 
 	for (auto i = 0; i < renderables.size(); i++)
 	{
-			renderables[i]->Render(modelLocation);
+			renderables[i]->Render(modelLocation, colorLocation);
 	}
 }
 
@@ -68,8 +68,8 @@ void ObjectRenderer::Initialization()
 	glFrontFace(GL_CCW);
 	glPolygonMode(GL_FRONT, GL_FILL);
 	glPolygonMode(GL_BACK, GL_LINE);
-	//glCullFace(GL_BACK);
-	//glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 }
 
 void ObjectRenderer::ResizeWindow(int windowWidth, int windowHeight)

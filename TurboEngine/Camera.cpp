@@ -5,12 +5,20 @@
 
 glm::mat4 Camera::GetViewMatrix()
 {
+	if(watched)
+		return glm::lookAt(globalPosition, watched->GetGlobalPosition(), glm::vec3(0, 1, 0));
+	else
 	return glm::lookAt(globalPosition, globalPosition + cameraFront, glm::vec3(0, 1, 0));
 }
 
 glm::mat4 Camera::GetProjectionMatrix(float asp)
 {
 	return glm::perspective(glm::radians(fov), 1 / asp, nr, fr);
+}
+
+void Camera::WatchComponent(D3Component * obj)
+{
+	watched = obj;
 }
 
 //void Camera::MoveByLocalVector(glm::vec3 vector)

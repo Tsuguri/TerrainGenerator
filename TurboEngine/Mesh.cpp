@@ -146,13 +146,20 @@ void Mesh::SendToGPU()
 	GLuint positionAtt = 0;
 	GLuint normalAtt = 3;
 	GLuint standardNormalAtt = 1;
+	GLuint centerAtt = 2;
 
 	glVertexAttribPointer(positionAtt, Vertex::PositionCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, 0);
 	glEnableVertexAttribArray(positionAtt);
+
 	glVertexAttribPointer(normalAtt, Vertex::NormalCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, (const GLvoid*)Vertex::PositionSize);
 	glEnableVertexAttribArray(normalAtt);
+
 	glVertexAttribPointer(standardNormalAtt, Vertex::StandardNormalCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, (const GLvoid*)(Vertex::PositionSize+Vertex::NormalSize));
 	glEnableVertexAttribArray(standardNormalAtt);
+
+	glVertexAttribPointer(centerAtt, Vertex::TriangleCenterCount, GL_FLOAT, GL_FALSE, Vertex::VertexSize, (const GLvoid*)(Vertex::PositionSize + Vertex::NormalSize+Vertex::TriangleCenterSize));
+	glEnableVertexAttribArray(centerAtt);
+
 	glBindBuffer(GL_ARRAY_BUFFER, NULL);
 
 	/*GLubyte indcs[] = { 0,1,3,0,3,2,1,5,7,1,7,3,4,0,2,4,2,6,2,3,7,2,7,6,4,5,1,4,1,0,5,4,6,5,6,7 };

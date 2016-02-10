@@ -39,6 +39,7 @@ void CurveAnimation::Animate(D3Component* object, float time)
 	else
 		to = points[actualPoint + 1];
 	actualStadium += speed*time / actualDistance;
+
 	if (actualStadium > 1.0f)
 	{
 		actualStadium = 0;
@@ -61,16 +62,16 @@ void CurveAnimation::Animate(D3Component* object, float time)
 		glm::vec2 angle;
 		//angle.x = atan2(rot.z, rot.y);
 		angle.y = atan2(rot.z, rot.x);
-		if (rot.x*rot.z > 0  )
+		/*if (rot.x*rot.z > 0  )
 			angle.y += glm::pi<float>();
 		if (rot.x == 0)
 			angle.y += glm::pi<float>() / 2;
 		if (rot.z == 0)
-			angle.y -= glm::pi<float>() / 2;
+			angle.y -= glm::pi<float>() / 2;*/
 		/*if (rot.x < 0 && rot.z<0)
 			angle.y += glm::pi<float>()/2;*/
-		rot.x = angle.x;
-		rot.y = angle.y;
+		rot.x = 0 ;
+		rot.y = -angle.y - glm::pi<float>()/2;
 		rot.z = 0;
 
 

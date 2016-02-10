@@ -12,8 +12,12 @@
 
 LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+glm::vec3 colors[3];
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	colors[0] = glm::vec3(0.7f, 0.7f, 0.7f);
+	colors[1] = glm::vec3(0.2f, 0.8f, 0.7f);
+	colors[2] = glm::vec3(0.3f, 0.3f, 0.8f);
 	POINT windowPos = { 100, 100 };
 	POINT windowSize = { 800,600 };
 	if (!okno.Initialize(hInstance, windowPos, windowSize))
@@ -148,8 +152,8 @@ WPARAM GlWindow::Run()
 		KeyControl(elapsed / 1000.0f);
 		UpdateObjects(elapsed);
 
-		DrawScene();
 		Animate(elapsed);
+		DrawScene();
 		// robienie rzeczy.
 
 		long actualTime = GetTickCount();
@@ -161,7 +165,7 @@ WPARAM GlWindow::Run()
 	}
 	return msg.wParam;
 }
-
+float carSpeed = 3.0f;
 void GlWindow::KeyControl(float time)
 {
 	if (cameraIndex == 0)
@@ -199,7 +203,7 @@ void GlWindow::KeyControl(float time)
 		}
 		if (keyPressed['S'])
 		{
-			userCar->MoveByLocalVector(glm::vec3(0, 0, -10)*time);
+			userCar->MoveByLocalVector(glm::vec3(0, 0, -10)*carSpeed*time);
 		}
 		if (keyPressed['D'])//D
 		{
@@ -207,7 +211,7 @@ void GlWindow::KeyControl(float time)
 		}
 		if (keyPressed['W'])
 		{
-			userCar->MoveByLocalVector(glm::vec3(0, 0, 10)*time);
+			userCar->MoveByLocalVector(glm::vec3(0, 0, 10)*carSpeed*time);
 		}
 	}
 	temp = NULL;
@@ -351,6 +355,7 @@ void GlWindow::LoadModels()
 		temp = new Renderable(model);
 		temp->SetLocalPosition(glm::vec3(i*6.0f, 0, 0));
 		temp->SetScale(glm::vec3(0.01f));
+		temp->color = colors[i % 3];
 		//parent->SetLocalRotationEuler(-glm::vec3(glm::pi<float>() / 2, 0, 0));
 		temp->SetAnimation(new CurveAnimation(path, 20.0f));
 		objRend->AddRenderable(temp);
@@ -360,12 +365,107 @@ void GlWindow::LoadModels()
 	temp = new Renderable(model);
 	temp->SetLocalPosition(glm::vec3(0, 0, 0));
 	temp->SetScale(glm::vec3(0.01f));
+	temp->color = glm::vec3(1.0f);
 	objRend->AddRenderable(temp);
 	cameras[2]->SetParent(temp);
 	cameras[2]->SetLocalPosition(glm::vec3(0,2,-3));
+	cameras[3]->WatchComponent(temp);
 	userCar = temp;
-
+	LoadBackground("Palm2.3DS");
 	//parent = new Renderable(model);
+
+}
+
+void GlWindow::LoadBackground(char* objPath)
+{
+	Model* model = new Model(objPath);
+	Model* stadion = new Model("Stadion.3ds");
+	Renderable* es = new Renderable(stadion);
+	objRend->AddRenderable(es);
+	es->SetScale(glm::vec3(0.1f));
+	es->color = glm::vec3(0.5f, 0.3f, 0.7f);
+	es->SetLocalPosition(glm::vec3(50.0f,-1.0f,-30.0f));
+	es->Rotate(70, 0, 0);
+	D3Component* obj = new D3Component();
+	obj->SetLocalPosition(glm::vec3(0, 0, 0));
+	Renderable* tab[10];
+	srand(time(NULL));
+	for (int i = 0; i < 5; i++)
+	{
+		tab[i] = new Renderable(model);
+		tab[i]->SetLocalPosition(glm::vec3(24, 0, 15+i*15));
+		tab[i]->SetScale(glm::vec3((rand()%10+10) / 100.0));
+		tab[i]->SetRotation(glm::quat(glm::vec3(glm::radians(-90.0f), 0, 0)));
+		objRend->AddRenderable(tab[i]);
+	}
+	//tab[0]->SetLocalPosition(glm::vec3(10, 0, 0));
+
+
+	//background;
+
+	std::vector<Vertex>* vecs=new std::vector<Vertex>();
+	std::vector<GLuint>* indices = new std::vector<GLuint>();
+	vecs->push_back(Vertex(-20, 0, -20, 0, 1, 0, 1, 0));
+	vecs->push_back(Vertex(-20, 0, 120, 0, 1, 0, 1, 0));
+	vecs->push_back(Vertex(100, 0, 120, 0, 1, 0, 1, 0));
+	vecs->push_back(Vertex(100, 0, -20, 0, 1, 0, 1, 0));
+	indices->push_back(0);
+	indices->push_back(1);
+	indices->push_back(2);
+	indices->push_back(0);
+	indices->push_back(2);
+	indices->push_back(3);
+	Mesh* mesh= new Mesh(*vecs, *indices);
+	Model* mod = new Model(mesh);
+	Renderable* rend = new Renderable(mod);
+	rend->color = glm::vec3(0.2f, 0.2f, 0.2f);
+	objRend->AddRenderable(rend);
+	//path
+	std::vector<Vertex>* vecsP = new std::vector<Vertex>();
+	std::vector<GLuint>* indicesP = new std::vector<GLuint>();
+	vecsP->push_back(Vertex(0, 0.02f, -10.0f, 0, 1, 0, 1, 0));
+	vecsP->push_back(Vertex(0, 0.02f, 110, 0, 1, 0, 1, 0));
+	vecsP->push_back(Vertex(50, 0.02f, 110, 0, 1, 0, 1, 0));
+	vecsP->push_back(Vertex(50, 0.02f, -10.0f, 0, 1, 0, 1, 0));
+	vecsP->push_back(Vertex(25, 0.02f, 10, 0, 1, 0, 1, 0));
+	vecsP->push_back(Vertex(25, 0.02f, 90, 0, 1, 0, 1, 0));
+	vecsP->push_back(Vertex(35, 0.02f, 90, 0, 1, 0, 1, 0));
+	vecsP->push_back(Vertex(35, 0.02f, 10, 0, 1, 0, 1, 0));
+	indicesP->push_back(0);
+	indicesP->push_back(1);
+	indicesP->push_back(4);
+	indicesP->push_back(4);
+	indicesP->push_back(1);
+	indicesP->push_back(5);
+
+	indicesP->push_back(1);
+	indicesP->push_back(2);
+	indicesP->push_back(5);
+	indicesP->push_back(5);
+	indicesP->push_back(2);
+	indicesP->push_back(6);
+
+	indicesP->push_back(2);
+	indicesP->push_back(3);
+	indicesP->push_back(6);
+	indicesP->push_back(6);
+	indicesP->push_back(3);
+	indicesP->push_back(7);
+
+	indicesP->push_back(3);
+	indicesP->push_back(0);
+	indicesP->push_back(7);
+	indicesP->push_back(7);
+	indicesP->push_back(0);
+	indicesP->push_back(4);
+	Mesh* meshP = new Mesh(*vecsP, *indicesP);
+	Model* modP = new Model(meshP);
+	rend = new Renderable(modP);
+	rend->SetLocalPosition(glm::vec3(-5.0f, 0, 0));
+	rend->color = glm::vec3(0.4f, 0.2f, 0.2f);
+	objRend->AddRenderable(rend);
+	//path
+
 
 }
 
@@ -469,9 +569,11 @@ void GlWindow::SetScene()
 	if (shader->programId == 0)
 		exit(EXIT_FAILURE);
 	objRend = new ObjectRenderer(windowWidth, windowHeight, shader);
-	cameras.push_back(new Camera(glm::vec3(0, 0, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 60));
-	cameras.push_back(new Camera(glm::vec3(20, 65, 50), glm::quat(glm::vec3(glm::radians(89.0f), glm::radians(90.0f), 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 60));
-	cameras.push_back(new Camera(glm::vec3(20, 65, 50), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 60));
+	cameras.push_back(new Camera(glm::vec3(0, 2, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 1.0f, 200.0f, 60));
+	cameras.push_back(new Camera(glm::vec3(0, 55, 50), glm::quat(glm::vec3(glm::radians(65.0f), glm::radians(90.0f), 0)), glm::vec3(0, 1, 0), 1.0f, 200.0f, 80));
+	cameras.push_back(new Camera(glm::vec3(20, 65, 50), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 1.0f, 200.0f, 60));
+	cameras.push_back(new Camera(glm::vec3(0, 25, 50), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 1.0f, 200.0f, 60));
+	
 	cameraIndex = 0;
 	actualCamera = cameras[0];
 	LoadModels();

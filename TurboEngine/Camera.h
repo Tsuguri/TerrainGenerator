@@ -14,6 +14,8 @@ public:
 	float fov;
 	glm::mat4 GetViewMatrix();
 	glm::mat4 GetProjectionMatrix(float asp);
+	D3Component* watched;
+	void WatchComponent(D3Component* obj);
 	Camera(glm::vec3 pos, glm::quat rotation, glm::vec3 up, float nr, float fr, float fov)
 	{
 		globalPosition=position= pos;

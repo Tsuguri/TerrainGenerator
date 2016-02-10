@@ -12,11 +12,10 @@ void D3Component::ActualizePosition()
 		globalPosition = glm::vec3(temp.x, temp.y, temp.z);
 		globalPosition += parent->globalPosition;
 
-		localRotation = glm::quat(glm::vec3(glm::radians(x), glm::radians(y), glm::radians(z)));
 		localRotation = glm::normalize(localRotation);
 		rotation = localRotation;
 		if (parent)
-			rotation *= parent->GetGlobalRotation();
+			rotation = parent->GetGlobalRotation() * localRotation;
 	}
 }
 
@@ -96,7 +95,7 @@ void D3Component::Rotate(float yaw, float pitch, float roll )
 	localRotation = glm::normalize(localRotation);
 	rotation = localRotation;
 	if (parent)
-		rotation *= parent->GetGlobalRotation();
+		rotation = parent->GetGlobalRotation()*localRotation;
 	for (auto child : childs)
 	{
 		child->ActualizePosition();

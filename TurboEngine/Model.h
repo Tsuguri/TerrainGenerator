@@ -8,6 +8,7 @@ class Model : public D3Component
 	std::vector<Mesh*> meshes;
 public:
 	Model(char* path);
+	Model(Mesh* mesh);
 	void Render();
 	std::string directory;
 	/*  Functions   */

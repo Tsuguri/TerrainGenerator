@@ -7,6 +7,11 @@ Model::Model(char* path)
 	loadModel(path);
 }
 
+Model::Model(Mesh * mesh)
+{
+	meshes.push_back(mesh);
+}
+
 void Model::Render()
 {
 	for (auto mesh : meshes)
@@ -42,8 +47,8 @@ void Model::processNode(aiNode* node, const aiScene* scene)
 }
 Mesh* Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
-	std::vector<Vertex>* vertices=new std::vector<Vertex>();
-	std::vector<GLuint>* indices=new std::vector<GLuint>;
+	std::vector<Vertex>* vertices = new std::vector<Vertex>();
+	std::vector<GLuint>* indices = new std::vector<GLuint>;
 	int k = 0;
 	Vertex tab[3];
 	for (GLuint i = 0; i < mesh->mNumVertices; i++)
@@ -59,7 +64,7 @@ Mesh* Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		vector.x = mesh->mNormals[i].x;
 		vector.y = mesh->mNormals[i].y;
 		vector.z = mesh->mNormals[i].z;
-		vertex.normal=vertex.standarizedNormal = vector;
+		vertex.normal = vertex.standarizedNormal = vector;
 
 		if (mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?
 		{
@@ -72,14 +77,16 @@ Mesh* Model::processMesh(aiMesh* mesh, const aiScene* scene)
 			vertex.uv = glm::vec2(0.0f, 0.0f);
 		tab[k] = vertex;
 		k++;
-		if(k==3)
+		if (k == 3)
 		{
-			glm::vec3 avg = glm::normalize((tab[0].normal + tab[1].normal + tab[2].normal)/3.0f);
+			glm::vec3 avg = glm::normalize((tab[0].normal + tab[1].normal + tab[2].normal) / 3.0f);
 			tab[0].standarizedNormal = tab[1].standarizedNormal = tab[2].standarizedNormal = avg;
+			avg = (tab[0].position + tab[1].position + tab[2].position) / 3.0f;
+			tab[0].triangleCenter = tab[1].triangleCenter = tab[2].triangleCenter = avg;
 			k = 0;
-		vertices->push_back(tab[0]);
-		vertices->push_back(tab[1]);
-		vertices->push_back(tab[2]);
+			vertices->push_back(tab[0]);
+			vertices->push_back(tab[1]);
+			vertices->push_back(tab[2]);
 		}
 	}
 	// Process indices

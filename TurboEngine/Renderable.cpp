@@ -12,10 +12,12 @@ Renderable::Renderable(Model* mesh)
 	this->model = mesh;
 }
 
-void Renderable::Render(GLint modelLocation)
+void Renderable::Render(GLint modelLocation, GLint colorLocation)
 {
 	glm::mat4 mat = glm::translate(globalPosition)*glm::toMat4(rotation)*glm::scale(scale);
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(mat));
+
+	glUniform3fv(colorLocation, 1, glm::value_ptr(color));
 
 	//glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, 0);
 

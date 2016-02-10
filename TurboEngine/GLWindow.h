@@ -26,6 +26,7 @@ private:
 	HDC DCHandle;
 
 	void LoadModels();
+	void LoadBackground(char* objPath);
 	ObjectRenderer* objRend;
 	std::vector<Renderable*> cars;
 	bool raceStarted = false;

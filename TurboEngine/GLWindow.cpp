@@ -341,14 +341,14 @@ std::vector<std::vector<glm::vec3>> makePaths()
 
 void GlWindow::LoadModels()
 {
-	Renderable* temp;
+	ModelRenderable* temp;
 	Model* model = new Model("Nissan.3DS");
-	std::vector<Renderable*> models;
+	std::vector<ModelRenderable*> models;
 	std::vector<std::vector<glm::vec3>> paths = makePaths();
 	int i = 1;
 	for (auto path : paths)
 	{
-		temp = new Renderable(model);
+		temp = new ModelRenderable(model);
 		temp->SetLocalPosition(glm::vec3(i*6.0f, 0, 0));
 		temp->SetScale(glm::vec3(0.01f));
 		//parent->SetLocalRotationEuler(-glm::vec3(glm::pi<float>() / 2, 0, 0));
@@ -357,7 +357,7 @@ void GlWindow::LoadModels()
 		cars.push_back(temp);
 		i++;
 	}
-	temp = new Renderable(model);
+	temp = new ModelRenderable(model);
 	temp->SetLocalPosition(glm::vec3(0, 0, 0));
 	temp->SetScale(glm::vec3(0.01f));
 	objRend->AddRenderable(temp);

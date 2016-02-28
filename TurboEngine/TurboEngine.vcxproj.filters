@@ -22,6 +22,9 @@
     <Filter Include="Header Files\Animations">
       <UniqueIdentifier>{4bad2c30-a765-4b63-9e75-44ba715d0da3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ChunkTerrain">
+      <UniqueIdentifier>{892e63cf-c4ae-4eb1-8186-2ed52e975b80}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GLWindow.h">
@@ -77,6 +80,9 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Chunk.h">
+      <Filter>ChunkTerrain</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,6 @@
 #version 330 core
 
 layout(location = 0)in vec3 positionIn;
-layout(location = 1)in vec3 standardNormal;
 layout(location = 3)in vec3 normalIn;
 
 const mat4 IdMat = mat4(1.0);
@@ -21,5 +20,5 @@ void main(void)
 	worldPosition = ModelMat*position;
 	gl_Position = MVP*position;
 	position = ModelMat*position;
-	normals = NormalMat*standardNormal;
+	normals = NormalMat*normalIn;
 }

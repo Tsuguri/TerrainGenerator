@@ -10,7 +10,7 @@ class ObjectRenderer
 private:
 	int width;
 	int height;
-	std::vector<Renderable*> renderables;
+	std::vector<ModelRenderable*> renderables;
 	std::list<int> meshFreePlaces;
 
 	void Initialization();
@@ -21,7 +21,7 @@ public:
 	void ResizeWindow(int windowWidth, int windowHeight);
 	void Render(Camera* camera, Scene* scene);
 	void Animate(float time);
-	void AddRenderable(Renderable* renderable);
+	void AddRenderable(ModelRenderable* renderable);
 
 
 };

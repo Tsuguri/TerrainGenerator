@@ -4,7 +4,7 @@
 #include <algorithm>
 
 
-Renderable::Renderable(Model* mesh)
+ModelRenderable::ModelRenderable(Model* mesh)
 {
 	position = glm::vec3(0);
 	rotation = glm::quat(0,0,0,0);
@@ -12,7 +12,7 @@ Renderable::Renderable(Model* mesh)
 	this->model = mesh;
 }
 
-void Renderable::Render(GLint modelLocation)
+void ModelRenderable::Render(GLint modelLocation)
 {
 	glm::mat4 mat = glm::translate(globalPosition)*glm::toMat4(rotation)*glm::scale(scale);
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, value_ptr(mat));
@@ -23,7 +23,7 @@ void Renderable::Render(GLint modelLocation)
 
 }
 
-void Renderable::SetScale(glm::vec3 scale)
+void ModelRenderable::SetScale(glm::vec3 scale)
 {
 	this->scale = scale;
 }

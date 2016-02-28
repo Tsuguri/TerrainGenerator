@@ -48,7 +48,7 @@ void ObjectRenderer::Animate(float time)
 	}
 }
 
-void ObjectRenderer::AddRenderable(Renderable* renderable)
+void ObjectRenderer::AddRenderable(ModelRenderable* renderable)
 {
 
 	renderables.push_back(renderable);

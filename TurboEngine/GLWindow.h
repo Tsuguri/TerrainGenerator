@@ -27,12 +27,12 @@ private:
 
 	void LoadModels();
 	ObjectRenderer* objRend;
-	std::vector<Renderable*> cars;
+	std::vector<ModelRenderable*> cars;
 	bool raceStarted = false;
 	int cameraIndex;
 	std::vector<Camera*> cameras;
 	D3Component* temp;
-	Renderable* userCar;
+	ModelRenderable* userCar;
 
 	Camera* actualCamera;
 	Scene* actualLightning;

@@ -11,7 +11,7 @@
 #include <vector>
 #include "Model.h"
 
-class Renderable : public D3Component
+class ModelRenderable : public D3Component
 {
 private:
 	glm::vec3 scale;
@@ -21,7 +21,7 @@ private:
 	
 public:
 
-	Renderable(Model* mesh);
+	ModelRenderable(Model* mesh);
 	void Render(GLint modelLocation);
 	void SetScale(glm::vec3 scale);
 };

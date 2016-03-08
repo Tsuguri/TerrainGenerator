@@ -379,15 +379,8 @@ void GlWindow::LoadModels()
 void GlWindow::LoadBackground(char* objPath)
 {
 	Model* model = new Model(objPath);
-	Model* stadion = new Model("Stadion.3ds");
-	Renderable* es = new Renderable(stadion);
-	objRend->AddRenderable(es);
-	es->SetScale(glm::vec3(0.1f));
-	es->color = glm::vec3(0.5f, 0.3f, 0.7f);
-	es->SetLocalPosition(glm::vec3(50.0f,-1.0f,-30.0f));
-	es->Rotate(70, 0, 0);
-	D3Component* obj = new D3Component();
-	obj->SetLocalPosition(glm::vec3(0, 0, 0));
+	//D3Component* obj = new D3Component();
+	//obj->SetLocalPosition(glm::vec3(0, 0, 0));s
 	Renderable* tab[10];
 	srand(time(NULL));
 	for (int i = 0; i < 5; i++)

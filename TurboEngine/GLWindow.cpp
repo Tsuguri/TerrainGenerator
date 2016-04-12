@@ -13,6 +13,8 @@
 LRESULT WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 glm::vec3 colors[3];
+
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	colors[0] = glm::vec3(0.7f, 0.7f, 0.7f);

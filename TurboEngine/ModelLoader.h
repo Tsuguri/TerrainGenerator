@@ -9,9 +9,9 @@
 class ModelLoader
 {
 	public:
-		static std::vector<Vertex>* LoadModel(char* path);
-		static void processNode(aiNode* node, std::vector<Vertex>* vertices, const aiScene* scene);
-		static void ModelLoader::processMesh(aiMesh* mesh, std::vector<Vertex>* vertices, const aiScene* scene);
+	//	static std::vector<Vertex>* LoadModel(char* path);
+		//static void processNode(aiNode* node, std::vector<Vertex>* vertices, const aiScene* scene);
+	//	static void ModelLoader::processMesh(aiMesh* mesh, std::vector<Vertex>* vertices, const aiScene* scene);
 		//std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type,char* typeName);
 };
 #endif

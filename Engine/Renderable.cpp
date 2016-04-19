@@ -4,6 +4,13 @@
 #include <algorithm>
 
 
+Renderable::Renderable()
+{
+	position = glm::vec3(0);
+	rotation = glm::quat(0, 0, 0, 0);
+	scale = glm::vec3(1);
+}
+
 Renderable::Renderable(Model* mesh)
 {
 	position = glm::vec3(0);

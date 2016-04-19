@@ -21,9 +21,9 @@ private:
 	
 public:
 	glm::vec3 color;
-
+	Renderable();
 	Renderable(Model* mesh);
-	void Render(GLint modelLocation, GLint colorLocation) const;
+	virtual void Render(GLint modelLocation, GLint colorLocation) const;
 	void SetScale(glm::vec3 scale);
 };
 

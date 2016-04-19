@@ -12,7 +12,7 @@ TurboEngine::TurboEngine()
 TurboEngine::~TurboEngine()
 {
 }
-int TurboEngine::Initialize(int width, int height,char* windowName)
+int TurboEngine::Initialize(int width, int height, char* windowName)
 {
 	//here goes glfw initialization
 	std::cout << "Starting GLFW context, OpenGL 3.3" << std::endl;
@@ -52,12 +52,19 @@ int TurboEngine::Initialize(int width, int height,char* windowName)
 
 int TurboEngine::Run()
 {
+		float lastFrameTime=0;
 	while (!glfwWindowShouldClose(window))
 	{
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
 
+		// Update timer 
+			// TODO
+		//objectRenderer->Animate(lastFrameTime);
+
 		// Render
+		//TODO: setting up scene and camera.
+		//objectRenderer->Render();
 		// Clear the colorbuffer
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -78,6 +85,13 @@ void TurboEngine::CloseWindow()
 
 void TurboEngine::KeyControl(GLFWwindow * window, int key, int scancode, int action, int mode)
 {
+	if (instance)
+	{
+		if (action == GLFW_PRESS)
+			instance->OnButtonPress(key);
+		if (action == GLFW_RELEASE)
+			instance->OnButtonReleased(key);
+	}
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS && instance)
 		instance->CloseWindow();
 	//will be doing sth
@@ -88,4 +102,20 @@ void TurboEngine::SetInstance(TurboEngine * engine)
 	if (instance)
 		throw "engine already exists!";
 	instance = engine;
+}
+
+void TurboEngine::OnButtonReleased(int keyCode)
+{
+	keyPressed[keyCode] = false;
+}
+
+void TurboEngine::OnButtonPress(int keyCode)
+{
+	keyPressed[keyCode] = true;
+	switch (keyCode)
+	{
+	case GLFW_KEY_ESCAPE:
+		instance->CloseWindow();
+		break;
+	}
 }

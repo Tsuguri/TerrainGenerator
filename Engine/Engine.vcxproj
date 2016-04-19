@@ -152,11 +152,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="D3Component.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ObjectRenderer.cpp" />
+    <ClCompile Include="Renderable.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="ShaderUtility.cpp" />
     <ClCompile Include="TurboEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\TurboEngine\ObjectRenderer.h" />
+    <ClInclude Include="BezierPositionAnimation.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="CurveAnimation.h" />
+    <ClInclude Include="D3Component.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelLoader.h" />
+    <ClInclude Include="ObjectRenderer.h" />
+    <ClInclude Include="PseudoBezierCurve.h" />
+    <ClInclude Include="Renderable.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="shaderutility.h" />
     <ClInclude Include="TurboEngine.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -162,42 +162,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BezierPositionAnimation.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="CurveAnimation.h" />
-    <ClInclude Include="D3Component.h" />
-    <ClInclude Include="GameObject.h" />
     <ClInclude Include="glew.h" />
     <ClInclude Include="GLWindow.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="ModelLoader.h" />
-    <ClInclude Include="ObjectRenderer.h" />
-    <ClInclude Include="PseudoBezierCurve.h" />
-    <ClInclude Include="Renderable.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="ShaderUtility.h" />
-    <ClInclude Include="Vertex.h" />
     <ClInclude Include="wglew.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BezierPositionAnimation.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CurveAnimation.cpp" />
-    <ClCompile Include="D3Component.cpp" />
-    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glew.c" />
     <ClCompile Include="GLWindow.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ModelLoader.cpp" />
-    <ClCompile Include="ObjectRenderer.cpp" />
-    <ClCompile Include="PseudoBezierCurve.cpp" />
-    <ClCompile Include="Renderable.cpp" />
-    <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="ShaderUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BasicFragment.fsh">

@@ -11,9 +11,6 @@ public:
 	Model(Mesh* mesh);
 	void Render();
 	std::string directory;
-	/*  Functions   */
-	void loadModel(std::string path);
-	//void processNode(aiNode* node, const aiScene* scene);
-	//Mesh* processMesh(aiMesh* mesh, const aiScene* scene);
+
 };
 #endif

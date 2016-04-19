@@ -46,6 +46,10 @@ public:
 class Animation
 {
 public:
+	virtual ~Animation()
+	{
+	}
+
 	virtual void StartAnimation() = 0;
 	virtual void StopAnimation() = 0;
 	virtual void Animate(D3Component* object, float time) = 0;

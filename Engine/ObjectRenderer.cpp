@@ -4,64 +4,48 @@
 
 
 
-void ObjectRenderer::Render(Camera* camera, Scene* scene)
+void ForwardRenderer::Render(const Scene& scene)
 {
 	//glm::vec3 col = camera->GetGlobalPosition();
 	glClearColor(0.2f, 0.33f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	program->SetAsActive();
-	GLint modelLocation = glGetUniformLocation(program->programId, "ModelMat");
-	GLint colorLocation = glGetUniformLocation(program->programId, "defaultColor");
-	if (scene)
-	{
-		GLint lightLocation = glGetUniformLocation(program->programId, "lightType");
-		glUniform1i(lightLocation, scene->lightningType);
-		GLint lightDirLocation = glGetUniformLocation(program->programId, "lightDir");
-		glUniform3fv(lightDirLocation, 1, glm::value_ptr(scene->LightDirection));
-		GLint lightColorLocation = glGetUniformLocation(program->programId, "lightColor");
-		glUniform3fv(lightColorLocation, 1, glm::value_ptr(scene->LightColor));
+	scene.shader->SetAsActive();
+	GLint modelLocation = glGetUniformLocation(scene.shader->programId, "ModelMat");
+	GLint colorLocation = glGetUniformLocation(scene.shader->programId, "defaultColor");
 
-	}
-	if (camera)
+
+	GLint lightDirLocation = glGetUniformLocation(scene.shader->programId, "lightDir");
+	glUniform3fv(lightDirLocation, 1, glm::value_ptr(scene.LightDirection));
+	GLint lightColorLocation = glGetUniformLocation(scene.shader->programId, "lightColor");
+	glUniform3fv(lightColorLocation, 1, glm::value_ptr(scene.LightColor));
+
+	if (scene.activeCamera)
 	{
-		GLint viewLocation = glGetUniformLocation(program->programId, "ViewMat");
-		GLint projectionLocation = glGetUniformLocation(program->programId, "ProjMat");
-		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(camera->GetViewMatrix()));
-		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(camera->GetProjectionMatrix(height / (float)width)));
-		GLint cameraPosLocation = glGetUniformLocation(program->programId, "cameraPosition");
-		glUniform3fv(cameraPosLocation, 1, glm::value_ptr(camera->GetGlobalPosition()));
+		GLint viewLocation = glGetUniformLocation(scene.shader->programId, "ViewMat");
+		GLint projectionLocation = glGetUniformLocation(scene.shader->programId, "ProjMat");
+		glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(scene.activeCamera->GetViewMatrix()));
+		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(scene.activeCamera->GetProjectionMatrix(height / (float)width)));
+		GLint cameraPosLocation = glGetUniformLocation(scene.shader->programId, "cameraPosition");
+		glUniform3fv(cameraPosLocation, 1, glm::value_ptr(scene.activeCamera->GetGlobalPosition()));
 	}
 
-	for (auto i = 0; i < renderables.size(); i++)
+	for(auto obj : scene.renderables)
 	{
-			renderables[i]->Render(modelLocation, colorLocation);
+		RenderObject(*obj,modelLocation,colorLocation);
 	}
 }
 
-void ObjectRenderer::Animate(float time)
-{
-	for (auto obj : renderables)
-	{
-		if (!obj->HasParent())
-			obj->Animate(time);
-	}
-}
 
-void ObjectRenderer::AddRenderable(Renderable* renderable)
-{
 
-	renderables.push_back(renderable);
-}
 
-ObjectRenderer::ObjectRenderer(int windowWidth, int windowHeight, ShaderProgram* shader)
+ForwardRenderer::ForwardRenderer(int windowWidth, int windowHeight) 
 {
-	program = shader;
 	ResizeWindow(windowWidth, windowHeight);
 
 	Initialization();
 }
 
-void ObjectRenderer::Initialization()
+void ForwardRenderer::Initialization()
 {
 	glEnable(GL_DEPTH_TEST);
 	glFrontFace(GL_CCW);
@@ -71,7 +55,13 @@ void ObjectRenderer::Initialization()
 	glEnable(GL_CULL_FACE);
 }
 
-void ObjectRenderer::ResizeWindow(int windowWidth, int windowHeight)
+void ForwardRenderer::RenderObject(const Renderable& object,int modelLocation,int colorLocation) const
+{
+	
+	object.Render(modelLocation,colorLocation);
+}
+
+void ForwardRenderer::ResizeWindow(int windowWidth, int windowHeight)
 {
 	width = windowWidth;
 	height = windowHeight;

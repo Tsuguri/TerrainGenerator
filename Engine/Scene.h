@@ -1,23 +1,29 @@
 #ifndef SCENEH
 #define SCENEH
 #include <glm/glm.hpp>
+#include "Camera.h"
+#include "Renderable.h"
 
 class Scene
 {
 public:
 	glm::vec3 LightDirection;
 	glm::vec3 LightColor;
-	int lightningType;
-	Scene(glm::vec3 direction, glm::vec3 color,int type)
+	Camera* activeCamera;
+	std::vector<Renderable*> renderables;
+	std::vector<D3Component*> animatables;
+	ShaderProgram* shader;
+
+	Scene(glm::vec3 direction, glm::vec3 color, Camera* camera) : activeCamera(camera)
 	{
+		
 		LightDirection = direction;
 		LightColor = color;
-		lightningType = type;
 	}
-	void NextType()
-	{
-		lightningType = (lightningType + 1) % 3;
-	}
+
+	void Animate(float timePassed);
+	void AddRenderable(Renderable* renderable);
+	void AddAnimatable(D3Component* renderable);
 };
 
 #endif

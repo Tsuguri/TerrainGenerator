@@ -5,23 +5,21 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "Scene.h"
-class ObjectRenderer
+
+
+class ForwardRenderer
 {
 private:
 	int width;
 	int height;
-	std::vector<Renderable*> renderables;
-	std::list<int> meshFreePlaces;
 
 	void Initialization();
-	ShaderProgram* program;
-
+	void RenderObject(const Renderable& object, int modelLocation, int colorLocation) const;
 public:
-	ObjectRenderer(int windowWidth, int windowHeight, ShaderProgram* shader);
+	ForwardRenderer(int windowWidth, int windowHeight);
+
 	void ResizeWindow(int windowWidth, int windowHeight);
-	void Render(Camera* camera, Scene* scene);
-	void Animate(float time);
-	void AddRenderable(Renderable* renderable);
+	void Render(const Scene& scene);
 
 
 };

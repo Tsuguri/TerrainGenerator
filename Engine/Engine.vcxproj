@@ -163,7 +163,6 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ShaderUtility.cpp" />
-    <ClCompile Include="TerrainChunk.cpp" />
     <ClCompile Include="TurboEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -182,7 +181,6 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="shaderutility.h" />
-    <ClInclude Include="TerrainChunk.h" />
     <ClInclude Include="TurboEngine.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

@@ -48,14 +48,11 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CurveAnimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainChunk.cpp">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -108,9 +105,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vertex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TerrainChunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -29,7 +29,7 @@ int TurboEngine::Initialize(int width, int height, char* windowName, int maxFPS)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
 	window = glfwCreateWindow(width, height, windowName, nullptr, nullptr);
@@ -45,6 +45,7 @@ int TurboEngine::Initialize(int width, int height, char* windowName, int maxFPS)
 	glfwSetKeyCallback(window, KeyControl);
 	glfwSetCursorPosCallback(window, MouseControl);
 	glfwSetMouseButtonCallback(window, MouseButtonControl);
+	glfwSetFramebufferSizeCallback(window, WindowResized);
 	// Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;
 	// Initialize GLEW to setup the OpenGL Function pointers
@@ -112,6 +113,7 @@ void TurboEngine::CloseWindow() const
 	glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
+
 void TurboEngine::KeyControl(GLFWwindow * window, int key, int scancode, int action, int mode)
 {
 	if (instance)
@@ -146,11 +148,23 @@ void TurboEngine::MouseControl(GLFWwindow* window, double xpos, double ypos)
 	}
 }
 
+void TurboEngine::WindowResized(GLFWwindow * window, int width, int height)
+{
+	if (instance)
+		instance->OnWindowResize(width, height);
+}
+
 void TurboEngine::OnMouseMoved(double xpos, double ypos)
 {
 	prevMousePos = actualMousePos;
 	actualMousePos = glm::vec2(xpos, ypos);
 	mouseDelta = actualMousePos - prevMousePos;
+}
+
+void TurboEngine::OnWindowResize(int width, int height)
+{
+	if (objectRenderer)
+		objectRenderer->ResizeWindow(width, height);
 }
 
 void TurboEngine::SetInstance(TurboEngine * engine)

@@ -20,7 +20,7 @@ void main(void)
 vec3 color;
 	if(lightType==0)
 	{
-		color=defaultColor;
+		color=position.xyz;
 	//ambient
 		vec3 ambient = ambientStrength*lightColor;
 

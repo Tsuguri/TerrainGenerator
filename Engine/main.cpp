@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 	engine.Initialize(800, 600, "Projekt indywidualny - generator terenu");
 
 	ShaderProgram* shad = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
-	Camera* camera = new Camera(glm::vec3(0, 2, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 1.0f, 200.0f, 60);
+	Camera* camera = new Camera(glm::vec3(0, 2, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 45);
 	auto anim = new InputControlAnimation();
 	camera->SetAnimation(anim);
 	anim->StartAnimation();

@@ -37,7 +37,9 @@ private:
 	static void KeyControl(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void MouseButtonControl(GLFWwindow* window, int button, int action, int mods);
 	static void MouseControl(GLFWwindow* window, double xpos, double ypos);
+	static void WindowResized(GLFWwindow* window, int width, int height);
 	virtual void OnMouseMoved(double xpos, double ypos);
+	virtual void OnWindowResize(int width, int height);
 	static void SetInstance(TurboEngine* engine);
 
 	virtual void OnMousePress(int key);

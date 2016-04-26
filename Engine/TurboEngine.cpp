@@ -1,5 +1,9 @@
 #include "TurboEngine.h"
 #include <thread>
+#include <algorithm>
+#include "Module.h"
+
+
 TurboEngine* TurboEngine::instance = NULL;
 
 
@@ -58,10 +62,14 @@ int TurboEngine::Initialize(int width, int height, char* windowName, int maxFPS)
 	// Define the viewport dimensions
 	glViewport(0, 0, width, height);
 	objectRenderer = new ForwardRenderer(width, height);
+	return 0;
 }
 
 int TurboEngine::Run()
 {
+	bool showFPS = false;
+
+
 	double lastFrameTime = 0.0;
 	int frameCounter = 0;
 	double temp = 0.0;
@@ -77,7 +85,7 @@ int TurboEngine::Run()
 		// Update timer 
 			// TODO
 		activeScene->Animate(lastFrameTime);
-
+		UpdateModules(lastFrameTime);
 		// Render
 		if (objectRenderer && activeScene)
 			objectRenderer->Render(*activeScene);
@@ -92,8 +100,11 @@ int TurboEngine::Run()
 		time += lastFrameTime;
 		if (time > 1.0)
 		{
-			std::cout << "FPS: " << frameCounter / time << std::endl;
-			std::cout << "avg time: " << time / frameCounter << std::endl;
+			if (showFPS)
+			{
+				std::cout << "FPS: " << frameCounter / time << std::endl;
+				std::cout << "avg time: " << time / frameCounter << std::endl;
+			}
 			time = 0.0;
 			frameCounter = 0;
 		}
@@ -132,7 +143,7 @@ void TurboEngine::MouseButtonControl(GLFWwindow* window, int button, int action,
 {
 	if (instance)
 	{
-		
+
 		if (action == GLFW_PRESS)
 			instance->OnMousePress(button);
 		if (action == GLFW_RELEASE)
@@ -142,7 +153,7 @@ void TurboEngine::MouseButtonControl(GLFWwindow* window, int button, int action,
 
 void TurboEngine::MouseControl(GLFWwindow* window, double xpos, double ypos)
 {
-	if(instance)
+	if (instance)
 	{
 		instance->OnMouseMoved(xpos, ypos);
 	}
@@ -228,7 +239,39 @@ glm::vec2 TurboEngine::GetMouseMove()
 	return mouseDelta;
 }
 
+void TurboEngine::AddModule(Module* module)
+{
+	modules.push_back(module);
+	module->Initialize(this);
+}
+
+void TurboEngine::RemoveModule(Module* module)
+{
+	module->EndWork();
+	toRemove.push_back(module);
+
+}
+
+Scene* TurboEngine::GetCurrentScene() const
+{
+	return activeScene;
+}
+
 TurboEngine* TurboEngine::GetInstance()
 {
 	return instance;
+}
+
+void TurboEngine::UpdateModules(float time)
+{
+	if (toRemove.size() > 0)
+		for (auto mod : toRemove)
+		{
+			modules.erase(std::remove(modules.begin(), modules.end(), mod), modules.end());
+		}
+	if (modules.size() > 0)
+		for (auto module : modules)
+		{
+			module->Update(time);
+		}
 }

@@ -33,6 +33,7 @@ public:
 	void StartAnimation() override;
 	void StopAnimation() override;
 	void Animate(D3Component* object, float time) override;
+	static glm::vec3 position;
 };
 
 #endif

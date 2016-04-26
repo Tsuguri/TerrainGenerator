@@ -1,5 +1,4 @@
 #include "D3Component.h"
-#include <glm/gtc/matrix_transform.hpp>
 #include <algorithm>
 #include <glm/gtx/quaternion.hpp>
 
@@ -31,21 +30,21 @@ void D3Component::SetLocalPosition(glm::vec3 position)
 	}
 }
 
-glm::vec3 D3Component::GetLocalPostion()
+glm::vec3 D3Component::GetLocalPostion() const
 {
 	return position;
 }
 
-glm::vec3 D3Component::GetGlobalPosition()
+glm::vec3 D3Component::GetGlobalPosition() const
 {
 	return globalPosition;
 }
 
-glm::quat D3Component::GetLocalRotation()
+glm::quat D3Component::GetLocalRotation() const
 {
 	return localRotation;
 }
-glm::quat D3Component::GetGlobalRotation()
+glm::quat D3Component::GetGlobalRotation() const
 {
 	return rotation;
 }
@@ -67,7 +66,7 @@ void D3Component::SetRotationEulerRadians(glm::vec3 rotation)
 
 void D3Component::MoveByVector(glm::vec3 vector)
 {
-	throw -1;
+	throw - 1;
 }
 
 void D3Component::MoveByLocalVector(glm::vec3 vector)
@@ -77,7 +76,7 @@ void D3Component::MoveByLocalVector(glm::vec3 vector)
 	SetLocalPosition(position + glm::vec3(v.x, v.y, v.z));
 }
 
-void D3Component::Rotate(float yaw, float pitch, float roll )
+void D3Component::Rotate(float yaw, float pitch, float roll)
 {
 	x += pitch;
 	y += yaw;
@@ -119,14 +118,14 @@ void D3Component::SetParent(D3Component* parent)
 	if (parent)
 	{
 		parent->AddChild(this);
-		globalPosition=position+parent->globalPosition;
+		globalPosition = position + parent->globalPosition;
 	}
 }
 
-bool D3Component::HasParent()
+bool D3Component::HasParent() const
 {
-	if(parent)
-	return true;
+	if (parent)
+		return true;
 	return false;
 }
 

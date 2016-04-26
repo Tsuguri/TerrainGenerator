@@ -93,8 +93,10 @@ void InputControlAnimation::StopAnimation()
 	running = false;
 }
 
+glm::vec3 InputControlAnimation::position = glm::vec3(0);
 void InputControlAnimation::Animate(D3Component* object, float time)
 {
+	position = object->GetGlobalPosition();
 	if(running)
 	{
 		TurboEngine* te = TurboEngine::GetInstance();

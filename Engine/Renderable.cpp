@@ -4,6 +4,10 @@
 #include <algorithm>
 
 
+Renderable::~Renderable()
+{
+}
+
 Renderable::Renderable()
 {
 	position = glm::vec3(0);

@@ -9,7 +9,7 @@
 
 #include "ObjectRenderer.h"
 
-
+class Module;
 
 class TurboEngine
 {
@@ -26,13 +26,16 @@ public:
 	virtual bool IsButtonPressed(int keycode);
 	virtual bool IsMouseButtonPressed(int keycode);
 	virtual glm::vec2 GetMouseMove();
+	void AddModule(Module* module);
+	void RemoveModule(Module* module);
+	Scene* GetCurrentScene() const;
 
 	static TurboEngine* GetInstance();
 	//fields
 
 private:
 	//methods
-	
+	void UpdateModules(float time);
 	
 	static void KeyControl(GLFWwindow* window, int key, int scancode, int action, int mode);
 	static void MouseButtonControl(GLFWwindow* window, int button, int action, int mods);
@@ -55,6 +58,8 @@ private:
 	glm::vec2 prevMousePos;
 	glm::vec2 actualMousePos;
 	glm::vec2 mouseDelta;
+	std::vector<Module*> modules;
+	std::vector<Module*> toRemove;
 	
 	bool keyPressed[1024];
 	bool mouseButtonPressed[10];

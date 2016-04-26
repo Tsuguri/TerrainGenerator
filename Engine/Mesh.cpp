@@ -44,7 +44,7 @@ Mesh::Mesh(std::vector<Vertex> verts, std::vector<GLuint> indices)
 
 Mesh::~Mesh()
 {
-	if (vbo > 0)
+	if (vbo > nullptr)
 		Dispose();
 }
 

@@ -23,7 +23,9 @@ public:
 
 	void Animate(float timePassed);
 	void AddRenderable(Renderable* renderable);
-	void AddAnimatable(D3Component* renderable);
+	void RemoveRenderable(Renderable* renderable);
+	void AddAnimatable(D3Component* animatable);
+	void RemoveAnimatable(D3Component* animatable);
 };
 
 #endif

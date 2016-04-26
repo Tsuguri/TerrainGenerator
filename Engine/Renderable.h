@@ -13,13 +13,14 @@
 
 class Renderable : public D3Component
 {
-private:
+protected:
 	glm::vec3 scale;
 	Model* model;
 	ShaderProgram* shader;
 
 	
 public:
+	virtual ~Renderable() override;
 	glm::vec3 color;
 	Renderable();
 	Renderable(Model* mesh);

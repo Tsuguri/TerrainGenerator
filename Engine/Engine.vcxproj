@@ -158,11 +158,15 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Module.cpp" />
     <ClCompile Include="ObjectRenderer.cpp" />
+    <ClCompile Include="PerlinNoise.cpp" />
     <ClCompile Include="Renderable.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="ShaderUtility.cpp" />
+    <ClCompile Include="TerrainChunk.cpp" />
+    <ClCompile Include="TerrainSystem.cpp" />
     <ClCompile Include="TurboEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -175,12 +179,16 @@
     <ClInclude Include="mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelLoader.h" />
+    <ClInclude Include="Module.h" />
     <ClInclude Include="ObjectRenderer.h" />
+    <ClInclude Include="PerlinNoise.h" />
     <ClInclude Include="PseudoBezierCurve.h" />
     <ClInclude Include="Renderable.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="shaderutility.h" />
+    <ClInclude Include="TerrainChunk.h" />
+    <ClInclude Include="TerrainSystem.h" />
     <ClInclude Include="TurboEngine.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

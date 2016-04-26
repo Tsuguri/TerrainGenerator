@@ -1,6 +1,14 @@
 #include "Model.h"
 #include <iostream>
 
+Model::~Model()
+{
+	for(auto m : meshes)
+	{
+		delete m;
+	}
+}
+
 Model::Model(char* path)
 {
 

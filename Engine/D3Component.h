@@ -19,11 +19,15 @@ protected:
 	std::vector<D3Component*> childs;
 	virtual void ActualizePosition();
 public:
+	virtual ~D3Component()
+	{
+	}
+
 	void SetLocalPosition(glm::vec3 position);
-	glm::vec3 GetLocalPostion();
-	glm::vec3 GetGlobalPosition();
-	glm::quat GetLocalRotation();
-	glm::quat GetGlobalRotation();
+	glm::vec3 GetLocalPostion() const;
+	glm::vec3 GetGlobalPosition() const;
+	glm::quat GetLocalRotation() const;
+	glm::quat GetGlobalRotation() const;
 
 	void SetLocalRotationEuler(glm::vec3 rotation);
 	void SetRotation(glm::quat rotation);
@@ -36,13 +40,14 @@ public:
 	void AddChild(D3Component* child);
 	void RemoveChild(D3Component* child);
 	void SetParent(D3Component* parent);
-	bool HasParent();
+	bool HasParent() const;
 	
 	void SetAnimation(Animation* anim);
 	void Animate(float time);
 	void SetAnimationStart(bool val) const;
 
 };
+
 class Animation
 {
 public:

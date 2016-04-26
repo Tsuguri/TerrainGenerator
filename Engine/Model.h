@@ -5,8 +5,10 @@
 
 class Model : public D3Component
 {
+private:
 	std::vector<Mesh*> meshes;
 public:
+	virtual ~Model() override;
 	Model(char* path);
 	Model(Mesh* mesh);
 	void Render();

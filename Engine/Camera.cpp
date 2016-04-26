@@ -30,8 +30,6 @@ void Camera::WatchComponent(D3Component * obj)
 
 void Camera::Rotate(float yaw, float pitch,float roll)
 {
-	//x = glm::degrees(glm::pitch(rotation));
-	//y = glm::degrees(glm::yaw(rotation));
 	D3Component::Rotate(yaw, pitch, roll);
 	cameraFront = rotation*glm::vec3(0, 0, 1.0f);
 }

@@ -97,32 +97,33 @@ glm::vec3 InputControlAnimation::position = glm::vec3(0);
 void InputControlAnimation::Animate(D3Component* object, float time)
 {
 	position = object->GetGlobalPosition();
+	float multiplier = glm::max(position.y, 1.0f)/10.0f;
 	if(running)
 	{
 		TurboEngine* te = TurboEngine::GetInstance();
 		if(te->IsButtonPressed(87))//w
 		{
-			object->MoveByLocalVector(glm::vec3(0.0f,0.0f,10.0f)*time);
+			object->MoveByLocalVector(glm::vec3(0.0f,0.0f,10.0f)*time*multiplier);
 		}
 		if (te->IsButtonPressed(83))//s
 		{
-			object->MoveByLocalVector(glm::vec3(0.0f, 0.0f, -10.0f)*time);
+			object->MoveByLocalVector(glm::vec3(0.0f, 0.0f, -10.0f)*time*multiplier);
 		}
 		if (te->IsButtonPressed(65))//a
 		{
-			object->MoveByLocalVector(glm::vec3(10.0f,0.0f,0.0f)*time);
+			object->MoveByLocalVector(glm::vec3(10.0f,0.0f,0.0f)*time*multiplier);
 		}
 		if (te->IsButtonPressed(68))//d
 		{
-			object->MoveByLocalVector(glm::vec3(-10.0f, 0.0f, 0.0f)*time);
+			object->MoveByLocalVector(glm::vec3(-10.0f, 0.0f, 0.0f)*time*multiplier);
 		}
 		if (te->IsButtonPressed(32))
 		{
-			object->MoveByLocalVector(glm::vec3(0.0f, 10.0f, 0.0f)*time);
+			object->MoveByLocalVector(glm::vec3(0.0f, 10.0f, 0.0f)*time*multiplier);
 		}
 		if (te->IsButtonPressed(340))
 		{
-			object->MoveByLocalVector(glm::vec3(0.0f, -10.0f, 0.0f)*time);
+			object->MoveByLocalVector(glm::vec3(0.0f, -10.0f, 0.0f)*time*multiplier);
 		}
 
 		auto pos = te->GetMouseMove();

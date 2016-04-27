@@ -13,7 +13,11 @@ class TerrainChunk : public Renderable
 	PerlinNoise* noise;
 
 	void CreateLOD1();
-	float GetHeight(float x, float y);
+	void CreateLOD2();
+	void CreateLOD3();
+	void SetLOD(int lod);
+	Model* CreateLOD(int size) const;
+	float GetHeight(float x, float y) const;
 public:
 	virtual ~TerrainChunk() override;
 	bool ActualizeLOD(glm::vec2 cameraPosition);

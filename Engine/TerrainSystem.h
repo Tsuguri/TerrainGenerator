@@ -6,10 +6,11 @@
 class TerrainSystem : public Module
 {
 	float timeFromStart;
-	TerrainChunk* rend;
+	std::vector<TerrainChunk*> chunks;
 	Scene* scene;
 	PerlinNoise noise;
 	glm::vec2 chunkSize;
+	glm::vec2 lastPos = glm::vec2(0);
 public:
 	void Update(float time) override;
 	void Initialize(TurboEngine* engine) override;

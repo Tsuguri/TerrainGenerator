@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	ShaderProgram* shad = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
 	Camera* camera = new Camera(glm::vec3(0, 2, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 45);
 	auto terrain = new TerrainSystem();
-	terrain->Seed(12352, 10, 50, 120,glm::vec2(10));
+	terrain->Seed(12352, 30, 90, 150,glm::vec2(20));
 	auto anim = new InputControlAnimation();
 	camera->SetAnimation(anim);
 	anim->StartAnimation();

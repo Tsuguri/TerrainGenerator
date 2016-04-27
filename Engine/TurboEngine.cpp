@@ -44,7 +44,7 @@ int TurboEngine::Initialize(int width, int height, char* windowName, int maxFPS)
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(0);
+	//glfwSwapInterval(0);
 	// Set the required callback functions
 	glfwSetKeyCallback(window, KeyControl);
 	glfwSetCursorPosCallback(window, MouseControl);

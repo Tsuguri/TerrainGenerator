@@ -1,11 +1,12 @@
 ﻿#pragma once
 #include "Module.h"
 #include "PerlinNoise.h"
+#include "TerrainChunk.h"
 
 class TerrainSystem : public Module
 {
 	float timeFromStart;
-	Renderable* rend;
+	TerrainChunk* rend;
 	Scene* scene;
 	PerlinNoise noise;
 	glm::vec2 chunkSize;

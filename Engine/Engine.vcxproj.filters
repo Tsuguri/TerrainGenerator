@@ -16,6 +16,9 @@
     <Filter Include="Systems">
       <UniqueIdentifier>{8814f8a9-9105-455f-b41b-da5d4fc029a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Terrain">
+      <UniqueIdentifier>{4f39efe4-e728-45c4-98fa-d060a290f587}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -57,14 +60,14 @@
     <ClCompile Include="Module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PerlinNoise.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TerrainChunk.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainSystem.cpp">
+      <Filter>Terrain</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,17 +122,17 @@
     <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PerlinNoise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TerrainSystem.h">
+      <Filter>Terrain</Filter>
+    </ClInclude>
     <ClInclude Include="TerrainChunk.h">
-      <Filter>Header Files</Filter>
+      <Filter>Terrain</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

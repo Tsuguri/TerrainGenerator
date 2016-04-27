@@ -36,13 +36,20 @@ void TerrainChunk::CreateLOD1()
 		{
 			Quad temp = quads[i][j];
 			noise->noise(position.x + i, position.y + j, 0);
-			temp.up.one.position = glm::vec3(position.x + i, GetHeight((position.x + i) / size, (position.y + j) / size), position.y + j);
-			temp.up.two.position = glm::vec3(position.x + i + 1, noise->noise((position.x + i + 1) / size, (position.y + j) / size, 0), position.y + j);
-			temp.up.three.position = glm::vec3(position.x + i + 1, noise->noise((position.x + i + 1) / size, (position.y + j + 1) / size, 0), position.y + j + 1);
 
-			temp.down.one.position = glm::vec3(position.x + i, noise->noise((position.x + i) / size, (position.y + j) / size, 0), position.y + j);
-			temp.down.two.position = glm::vec3(position.x + i, noise->noise((position.x + i) / size, (position.y + j + 1) / size, 0), position.y + j + 1);
-			temp.down.three.position = glm::vec3(position.x + i + 1, noise->noise((position.x + i + 1) / size, (position.y + j + 1) / size, 0), position.y + j + 1);
+			temp.up.one.position = glm::vec3(position.x + i, GetHeight((position.x + i) / size, (position.y + j) / size) * 10, position.y + j);
+			temp.up.two.position = glm::vec3(position.x + i + 1, GetHeight((position.x + i + 1) / size, (position.y + j) / size) * 10, position.y + j);
+			temp.up.three.position = glm::vec3(position.x + i + 1, GetHeight((position.x + i + 1) / size, (position.y + j + 1) / size) * 10, position.y + j + 1);
+
+			glm::vec3 norm = glm::normalize(glm::cross(temp.up.two.position - temp.up.three.position, temp.up.one.position - temp.up.two.position));
+			temp.up.one.normal = temp.up.two.normal = temp.up.three.normal = norm;
+
+			temp.down.one.position = glm::vec3(position.x + i, GetHeight((position.x + i) / (size), (position.y + j) / (size)) * 10, position.y + j);
+			temp.down.two.position = glm::vec3(position.x + i, GetHeight((position.x + i) / (size),  (position.y + j + 1) / (size)) * 10, position.y + j + 1);
+			temp.down.three.position = glm::vec3(position.x + i + 1, GetHeight( (position.x + i + 1) / (size),  (position.y + j + 1) / (size)) * 10, position.y + j + 1);
+
+			norm = glm::normalize(glm::cross(temp.down.one.position - temp.down.two.position, temp.down.two.position - temp.down.three.position));
+			temp.down.one.normal = temp.down.two.normal = temp.down.three.normal = norm;
 
 			quads[i][j] = temp;
 		}
@@ -96,7 +103,7 @@ void TerrainChunk::CreateLOD1()
 
 float TerrainChunk::GetHeight(float x, float y)
 {
-	return (float)noise->noise(x, y, 0);
+	return (float)(noise->noise(8*x, 8*y, 0) + noise->noise(4*x,4*y,0)*0.5f + noise->noise(2*x,2*y,0)*0.25f);
 }
 
 TerrainChunk::~TerrainChunk()
@@ -139,5 +146,6 @@ void TerrainChunk::Initialize(glm::vec2 position, glm::vec2 size, PerlinNoise* n
 	this->size = size;
 	this->noise = noise;
 	lod1 = lod2 = lod3 = nullptr;
+	color = glm::vec3(0.2f, 0.2f, 0.2f);
 	CreateLOD1();
 }

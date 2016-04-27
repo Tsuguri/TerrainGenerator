@@ -4,7 +4,6 @@ in vec4 position;
 in vec3 normals;
 in vec4 worldPosition;
 
-uniform int lightType = 0;
 uniform vec3 defaultColor = vec3(0.7);
 uniform vec3 cameraPosition = vec3(1, 1, 1);
 uniform vec3 lightDir = vec3(-1, -1, 0);
@@ -18,8 +17,7 @@ out vec4 ColorOut;
 void main(void)
 {
 vec3 color;
-	if(lightType==0)
-	{
+
 		color=defaultColor;
 	//ambient
 		vec3 ambient = ambientStrength*lightColor;
@@ -37,7 +35,4 @@ vec3 color;
 		vec3 specular = lightColor * spec;
 		vec3 result = (ambient+diffuse+specular)*color;
 		ColorOut=vec4(result,1.0);
-	}
-	else
-		ColorOut=vec4(normals,1.0);
 }

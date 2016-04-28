@@ -68,28 +68,35 @@ Model* TerrainChunk::CreateLOD(int size) const
 	float fre = 100;//frequency
 	float ts = this->size.x / (float)size;
 	float ampl = 10;
+	float** heights = new float*[size+1];
+	for (int i = 0; i < size + 1;i++)
+	{
+		heights[i] = new float[size + 1];
+		for (int j = 0; j < size + 1; j++)
+			heights[i][j] = GetHeight((position.x + i*ts) / fre, (position.y + ts*j) / fre) * ampl;
+	}
 	Quad** quads = new Quad*[size];
 	for (int i = 0; i < size; i++)
 		quads[i] = new Quad[size];
-
+	Quad temp;
+	glm::vec3 norm;
 	printf("subtime 1: %f\n ", glfwGetTime() - time);
 	for (int i = 0; i < size; i++)
 	{
-
 		for (int j = 0; j < size; j++)
 		{
-			Quad temp = quads[i][j];
-			temp.up.one.position = glm::vec3((position.x + ts* i), GetHeight((position.x + i*ts)/ fre, (position.y + ts*j) / fre) * ampl, (position.y + ts*j));
-			temp.up.two.position = glm::vec3((position.x + ts*(i + 1)), GetHeight((position.x + ts*(i + 1))/ fre, (position.y + ts*j) / fre) * ampl, (position.y + ts*j));
-			temp.up.three.position = glm::vec3((position.x + ts*(i + 1)), GetHeight((position.x + ts*(i + 1))/ fre, (position.y + ts*( j + 1))/ fre) * ampl, (position.y + ts*( j + 1)));
+			temp = quads[i][j];
 
-			glm::vec3 norm = glm::normalize(glm::cross(temp.up.two.position - temp.up.three.position, temp.up.one.position - temp.up.two.position));
+			temp.up.one.position = glm::vec3((position.x + ts* i), heights[i][j], (position.y + ts*j));
+			temp.up.two.position = glm::vec3((position.x + ts*(i + 1)), heights[i + 1][j], (position.y + ts*j));
+			temp.up.three.position = glm::vec3((position.x + ts*(i + 1)), heights[i + 1][j + 1], (position.y + ts*(j + 1)));
+
+			norm = glm::normalize(glm::cross(temp.up.two.position - temp.up.three.position, temp.up.one.position - temp.up.two.position));
 			temp.up.one.normal = temp.up.two.normal = temp.up.three.normal = norm;
 
-
-			temp.down.one.position = glm::vec3((position.x + ts*i), GetHeight((position.x + i*ts) / fre, (position.y + j*ts) / fre) * ampl, (position.y + ts* j));
-			temp.down.two.position = glm::vec3((position.x + ts*i), GetHeight((position.x + i*ts) / fre, (position.y + (j + 1)*ts) / fre) * ampl, (position.y + ts*(j + 1)));
-			temp.down.three.position = glm::vec3((position.x + ts*(i + 1)), GetHeight((position.x + (i + 1)*ts) / fre, (position.y + (j + 1)*ts) / fre) * ampl, (position.y + ts*( j + 1)));
+			temp.down.one.position = glm::vec3((position.x + ts*i),heights[i][j], (position.y + ts* j));
+			temp.down.two.position = glm::vec3((position.x + ts*i), heights[i][j+1], (position.y + ts*(j + 1)));
+			temp.down.three.position = glm::vec3((position.x + ts*(i + 1)), heights[i + 1][j + 1], (position.y + ts*( j + 1)));
 
 			norm = glm::normalize(glm::cross(temp.down.one.position - temp.down.two.position, temp.down.two.position - temp.down.three.position));
 			temp.down.one.normal = temp.down.two.normal = temp.down.three.normal = norm;
@@ -100,8 +107,10 @@ Model* TerrainChunk::CreateLOD(int size) const
 	printf("subtime 2: %f\n ", glfwGetTime() - time);
 
 	std::vector<Vertex>* vecs = new std::vector<Vertex>();
+	vecs->reserve((size + 1)*(size + 1));
 	std::vector<GLuint>* indices = new std::vector<GLuint>();
-
+	indices->reserve((size + 1)*(size + 1));
+	printf("subtione 2.5: %f\n", glfwGetTime() - time);
 	int k = 0;
 	for (int i = 0; i < size; i++)
 	{
@@ -121,16 +130,19 @@ Model* TerrainChunk::CreateLOD(int size) const
 		}
 	}
 	printf("subtime 3: %f\n ", glfwGetTime() - time);
-	auto temp = new Model(new Mesh(*vecs, *indices));
+	auto tmp = new Model(new Mesh(*vecs, *indices));
 
 	time = glfwGetTime() - time;
 	printf("generating time: %f s\n", time);
 	for (int i = 0; i < size; i++)
 		delete quads[i];
+	for (int i = 0; i < size + 1; i++)
+		delete heights[i];
+	delete heights;
 	delete quads;
 	delete vecs;
 	delete indices;
-	return temp;
+	return tmp;
 }
 
 float TerrainChunk::GetHeight(float x, float y) const

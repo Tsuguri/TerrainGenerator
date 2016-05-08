@@ -151,23 +151,10 @@ float TerrainChunk::GetHeight(float x, float y) const
 	return static_cast<float>(noise->noise(8 * x, 8 * y, 0) + noise->noise(4 * x, 4 * y, 0)*0.5f + noise->noise(2 * x, 2 * y, 0)*0.25f);
 }
 
-TerrainChunk::~TerrainChunk()
+void TerrainChunk::ActualiseVisiblity(glm::vec3 cameraPosition)
 {
-	if (lod1)
-		delete lod1;
-	if (lod2)
-		delete lod2;
-	if (lod3)
-		delete lod3;
-	model = NULL;
-}
-
-
-
-bool TerrainChunk::ActualizeLOD(glm::vec2 cameraPosition)
-{
-	float distance =  glm::length(cameraPosition - (position+ size/2.0f));
-	printf("distance: %f", distance);
+	glm::vec2 temp = (position + size / 2.0f);
+	float distance = glm::length(cameraPosition - glm::vec3(temp.x, 0.0f, temp.y));
 	switch (actualLOD)
 	{
 	case 1:
@@ -191,8 +178,6 @@ bool TerrainChunk::ActualizeLOD(glm::vec2 cameraPosition)
 		{
 			SetLOD(2);
 		}
-		else if (distance>TerrainSystem::LODDistance3 + 5)
-			return false;
 		break;
 	default:
 		if (distance < TerrainSystem::LODDistance1)
@@ -213,11 +198,26 @@ bool TerrainChunk::ActualizeLOD(glm::vec2 cameraPosition)
 			actualLOD = 1;
 			model = lod1;
 		}
-		else
-			return false;
 		break;
 	}
-	return true;
+}
+
+TerrainChunk::~TerrainChunk()
+{
+	if (lod1)
+		delete lod1;
+	if (lod2)
+		delete lod2;
+	if (lod3)
+		delete lod3;
+	model = NULL;
+}
+
+
+
+void TerrainChunk::ActualizeLOD(glm::vec3 cameraPosition, glm::vec2 direction)
+{
+	ActualiseVisiblity(cameraPosition);
 }
 
 
@@ -227,7 +227,7 @@ void TerrainChunk::Initialize(glm::vec2 position, glm::vec2 size, PerlinNoise* n
 	this->size = size;
 	this->noise = noise;
 	lod1 = lod2 = lod3 = nullptr;
-	color = glm::vec3(0.2f, 0.2f, 0.2f);
+	color = glm::vec3(0.2f, 0.7f, 0.2f);
 	CreateLOD1();
 	model = lod1;
 	actualLOD = 1;

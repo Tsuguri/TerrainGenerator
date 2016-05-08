@@ -98,6 +98,7 @@ Model* TerrainChunk::CreateLOD(int size) const
 			temp.down.two.position = glm::vec3((position.x + ts*i), heights[i][j+1], (position.y + ts*(j + 1)));
 			temp.down.three.position = glm::vec3((position.x + ts*(i + 1)), heights[i + 1][j + 1], (position.y + ts*( j + 1)));
 
+
 			norm = glm::normalize(glm::cross(temp.down.one.position - temp.down.two.position, temp.down.two.position - temp.down.three.position));
 			temp.down.one.normal = temp.down.two.normal = temp.down.three.normal = norm;
 
@@ -200,6 +201,7 @@ void TerrainChunk::ActualiseVisiblity(glm::vec3 cameraPosition)
 		}
 		break;
 	}
+
 }
 
 TerrainChunk::~TerrainChunk()

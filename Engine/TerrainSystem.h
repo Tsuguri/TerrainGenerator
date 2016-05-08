@@ -11,6 +11,8 @@ class TerrainSystem : public Module
 	PerlinNoise noise;
 	glm::vec2 chunkSize;
 	glm::vec2 lastPos = glm::vec2(0);
+
+	void UpdateChunks(glm::vec2 position,glm::vec3 camera);
 public:
 	void Update(float time) override;
 	void Initialize(TurboEngine* engine) override;

@@ -4,7 +4,7 @@ in vec4 position;
 in vec3 normals;
 in vec4 worldPosition;
 
-uniform vec3 defaultColor = vec3(0.7);
+uniform vec3 defaultColor = vec3(0.3,0.3,0.7);
 uniform vec3 cameraPosition = vec3(1, 1, 1);
 uniform vec3 lightDir = vec3(-1, -1, 0);
 uniform vec3 lightColor = vec3(1,1,1);

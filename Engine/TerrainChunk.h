@@ -18,9 +18,12 @@ class TerrainChunk : public Renderable
 	void SetLOD(int lod);
 	Model* CreateLOD(int size) const;
 	float GetHeight(float x, float y) const;
+	void ActualiseVisiblity(glm::vec3 cameraPosition);
+
+
 public:
 	virtual ~TerrainChunk() override;
-	bool ActualizeLOD(glm::vec2 cameraPosition);
+	void ActualizeLOD(glm::vec3 cameraPosition,glm::vec2 direction);
 	void Initialize(glm::vec2 position, glm::vec2 size,PerlinNoise* noise);
 	//virtual void Render(GLint modelLocation, GLint colorLocation) const override;
 };

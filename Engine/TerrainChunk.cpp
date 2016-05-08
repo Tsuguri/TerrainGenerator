@@ -42,8 +42,6 @@ void TerrainChunk::CreateLOD3()
 
 void TerrainChunk::SetLOD(int lod)
 {
-	printf("setting lod: %d", lod);
-
 	switch (lod)
 	{
 	case 1:
@@ -64,7 +62,6 @@ void TerrainChunk::SetLOD(int lod)
 
 Model* TerrainChunk::CreateLOD(int size) const
 {
-	float time = glfwGetTime();
 	float fre = 100;//frequency
 	float ts = this->size.x / (float)size;
 	float ampl = 10;
@@ -80,7 +77,6 @@ Model* TerrainChunk::CreateLOD(int size) const
 		quads[i] = new Quad[size];
 	Quad temp;
 	glm::vec3 norm;
-	printf("subtime 1: %f\n ", glfwGetTime() - time);
 	for (int i = 0; i < size; i++)
 	{
 		for (int j = 0; j < size; j++)
@@ -105,13 +101,12 @@ Model* TerrainChunk::CreateLOD(int size) const
 			quads[i][j] = temp;
 		}
 	}
-	printf("subtime 2: %f\n ", glfwGetTime() - time);
 
 	std::vector<Vertex>* vecs = new std::vector<Vertex>();
 	vecs->reserve((size + 1)*(size + 1));
 	std::vector<GLuint>* indices = new std::vector<GLuint>();
 	indices->reserve((size + 1)*(size + 1));
-	printf("subtione 2.5: %f\n", glfwGetTime() - time);
+
 	int k = 0;
 	for (int i = 0; i < size; i++)
 	{
@@ -130,11 +125,8 @@ Model* TerrainChunk::CreateLOD(int size) const
 			}
 		}
 	}
-	printf("subtime 3: %f\n ", glfwGetTime() - time);
-	auto tmp = new Model(new Mesh(*vecs, *indices));
 
-	time = glfwGetTime() - time;
-	printf("generating time: %f s\n", time);
+	auto tmp = new Model(new Mesh(*vecs, *indices));
 	for (int i = 0; i < size; i++)
 		delete quads[i];
 	for (int i = 0; i < size + 1; i++)
@@ -152,9 +144,9 @@ float TerrainChunk::GetHeight(float x, float y) const
 	return static_cast<float>(noise->noise(8 * x, 8 * y, 0) + noise->noise(4 * x, 4 * y, 0)*0.5f + noise->noise(2 * x, 2 * y, 0)*0.25f);
 }
 
-void TerrainChunk::ActualiseVisiblity(glm::vec3 cameraPosition)
+bool TerrainChunk::ActualiseVisiblity(glm::vec3 cameraPosition)
 {
-	glm::vec2 temp = (position + size / 2.0f);
+	glm::vec2 temp = (position + size / 2);
 	float distance = glm::length(cameraPosition - glm::vec3(temp.x, 0.0f, temp.y));
 	switch (actualLOD)
 	{
@@ -179,6 +171,8 @@ void TerrainChunk::ActualiseVisiblity(glm::vec3 cameraPosition)
 		{
 			SetLOD(2);
 		}
+		else if (distance>TerrainSystem::LODDistance3+20)
+			return false;
 		break;
 	default:
 		if (distance < TerrainSystem::LODDistance1)
@@ -189,18 +183,21 @@ void TerrainChunk::ActualiseVisiblity(glm::vec3 cameraPosition)
 		}
 		else if (distance < TerrainSystem::LODDistance2)
 		{
-			CreateLOD1();
-			actualLOD = 1;
-			model = lod1;
+			CreateLOD2();
+			actualLOD = 2;
+			model = lod2;
 		}
 		else if (distance < TerrainSystem::LODDistance3)
 		{
-			CreateLOD1();
-			actualLOD = 1;
-			model = lod1;
+			CreateLOD3();
+			actualLOD = 3;
+			model = lod3;
 		}
+		else if(distance > TerrainSystem::LODDistance3+20)
+			return false;
 		break;
 	}
+	return true;
 
 }
 
@@ -217,20 +214,30 @@ TerrainChunk::~TerrainChunk()
 
 
 
-void TerrainChunk::ActualizeLOD(glm::vec3 cameraPosition, glm::vec2 direction)
+bool TerrainChunk::ActualizeLOD(glm::vec3 cameraPosition, glm::vec2 direction)
 {
-	ActualiseVisiblity(cameraPosition);
+	return ActualiseVisiblity(cameraPosition);
 }
 
 
-void TerrainChunk::Initialize(glm::vec2 position, glm::vec2 size, PerlinNoise* noise)
+void TerrainChunk::Initialize(glm::ivec2 position, glm::ivec2 size, PerlinNoise* noise)
 {
 	this->position = position;
 	this->size = size;
 	this->noise = noise;
 	lod1 = lod2 = lod3 = nullptr;
 	color = glm::vec3(0.2f, 0.7f, 0.2f);
-	CreateLOD1();
-	model = lod1;
-	actualLOD = 1;
+	actualLOD = -1;
+}
+
+glm::ivec2 TerrainChunk::GetPosition() const
+{
+	return position;
+}
+
+void TerrainChunk::Render(GLint modelLocation, GLint colorLocation) const
+{
+	if (!model)
+		return;
+	Renderable::Render(modelLocation, colorLocation);
 }

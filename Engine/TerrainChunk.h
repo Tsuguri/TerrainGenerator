@@ -4,8 +4,8 @@
 
 class TerrainChunk : public Renderable
 {
-	glm::vec2 position;
-	glm::vec2 size;
+	glm::ivec2 position;
+	glm::ivec2 size;
 	int actualLOD;
 	Model* lod1;
 	Model* lod2;
@@ -18,12 +18,14 @@ class TerrainChunk : public Renderable
 	void SetLOD(int lod);
 	Model* CreateLOD(int size) const;
 	float GetHeight(float x, float y) const;
-	void ActualiseVisiblity(glm::vec3 cameraPosition);
+
+	bool ActualiseVisiblity(glm::vec3 cameraPosition);
 
 
 public:
 	virtual ~TerrainChunk() override;
-	void ActualizeLOD(glm::vec3 cameraPosition,glm::vec2 direction);
-	void Initialize(glm::vec2 position, glm::vec2 size,PerlinNoise* noise);
-	//virtual void Render(GLint modelLocation, GLint colorLocation) const override;
+	bool ActualizeLOD(glm::vec3 cameraPosition,glm::vec2 direction);
+	void Initialize(glm::ivec2 position, glm::ivec2 size,PerlinNoise* noise);
+	glm::ivec2 GetPosition() const;
+	virtual void Render(GLint modelLocation, GLint colorLocation) const override;
 };

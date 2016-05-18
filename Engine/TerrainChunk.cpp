@@ -64,13 +64,13 @@ Model* TerrainChunk::CreateLOD(int size) const
 {
 	float fre = 100;//frequency
 	float ts = this->size.x / (float)size;
-	float ampl = 10;
 	float** heights = new float*[size+1];
+	float ampl = configuration->amplitude;
 	for (int i = 0; i < size + 1;i++)
 	{
 		heights[i] = new float[size + 1];
 		for (int j = 0; j < size + 1; j++)
-			heights[i][j] = GetHeight((position.x + i*ts) / fre, (position.y + ts*j) / fre) * ampl;
+			heights[i][j] = GetHeight((position.x + i*ts) / fre, (position.y + ts*j) / fre)*ampl;
 	}
 	Quad** quads = new Quad*[size];
 	for (int i = 0; i < size; i++)
@@ -140,7 +140,6 @@ Model* TerrainChunk::CreateLOD(int size) const
 
 float TerrainChunk::GetHeight(float x, float y) const
 {
-	//return noise->noise(x, y, 0) + noise->noise(20 * x, 20 * y, 0);
 	return static_cast<float>(noise->noise(8 * x, 8 * y, 0) + noise->noise(4 * x, 4 * y, 0)*0.5f + noise->noise(2 * x, 2 * y, 0)*0.25f);
 }
 
@@ -209,18 +208,18 @@ TerrainChunk::~TerrainChunk()
 		delete lod2;
 	if (lod3)
 		delete lod3;
-	model = NULL;
+	model = nullptr;
 }
 
 
 
-bool TerrainChunk::ActualizeLOD(glm::vec3 cameraPosition, glm::vec2 direction)
+bool TerrainChunk::ActualizeLOD(glm::vec3 cameraPosition)
 {
 	return ActualiseVisiblity(cameraPosition);
 }
 
 
-void TerrainChunk::Initialize(glm::ivec2 position, glm::ivec2 size, PerlinNoise* noise)
+void TerrainChunk::Initialize(glm::ivec2 position, glm::ivec2 size, PerlinNoise* noise,TerrainSystemConfiguration* configuration)
 {
 	this->position = position;
 	this->size = size;
@@ -228,6 +227,7 @@ void TerrainChunk::Initialize(glm::ivec2 position, glm::ivec2 size, PerlinNoise*
 	lod1 = lod2 = lod3 = nullptr;
 	color = glm::vec3(0.2f, 0.7f, 0.2f);
 	actualLOD = -1;
+	this->configuration = configuration;
 }
 
 glm::ivec2 TerrainChunk::GetPosition() const

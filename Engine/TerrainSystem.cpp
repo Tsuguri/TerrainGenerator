@@ -58,7 +58,7 @@ void TerrainSystem::UpdateChunks(glm::ivec2 position,glm::vec3 camera)
 	for(auto chunk : chunks)
 	{
 		
-		if(!chunk.second->ActualizeLOD(camera, position))
+		if(!chunk.second->ActualizeLOD(camera))
 		{
 			toRemove.push_back(chunk.second);
 			continue;
@@ -112,7 +112,7 @@ void TerrainSystem::DestroyChunk(TerrainChunk* chunk)
 TerrainChunk* TerrainSystem::CreateChunk(glm::ivec2 position)
 {
 	auto rend = new TerrainChunk();
-	rend->Initialize(position, chunkSize, &noise);
+	rend->Initialize(position, chunkSize, &noise,&configuraton);
 	return rend;
 }
 
@@ -144,6 +144,12 @@ void TerrainSystem::Update(float time)
 	}
 }
 
+TerrainSystem::TerrainSystem(TerrainSystemConfiguration configuraton)
+{
+	this->configuraton = configuraton;
+	scene = nullptr;
+	noise = PerlinNoise(configuraton.seed);
+}
 
 
 void TerrainSystem::Initialize(TurboEngine* engine)
@@ -153,8 +159,8 @@ void TerrainSystem::Initialize(TurboEngine* engine)
 
 	Module::Initialize(engine);
 	float time  = glfwGetTime();
-	for (int i = 0; i < 2; i++)
-		for (int j = 0; j < 2; j++)
+	for (int i = -5; i < 6; i++)
+		for (int j = -5; j < 6; j++)
 		{
 			MakeChunk(glm::ivec2(i*chunkSize.x, j*chunkSize.y));
 		}
@@ -164,7 +170,6 @@ void TerrainSystem::Initialize(TurboEngine* engine)
 
 void TerrainSystem::Seed(unsigned seed, float lod1, float lod2, float lod3, glm::vec2 chunkSize)
 {
-	noise = PerlinNoise(seed);
 	LODDistance1 = lod1;
 	LODDistance2 = lod2;
 	LODDistance3 = lod3;

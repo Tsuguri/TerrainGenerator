@@ -3,7 +3,7 @@
 #include "PerlinNoise.h"
 #include "TerrainChunk.h"
 #include <unordered_map>
-
+#include "LodInfo.h"
 namespace std
 {
 	template <>
@@ -24,11 +24,11 @@ namespace std
 	};
 }
 
+
 class TerrainSystem : public Module
 {
-	float timeFromStart;
-	//std::vector<TerrainChunk*> chunks;
 	std::unordered_map<glm::ivec2, TerrainChunk*> chunks;
+	TerrainSystemConfiguration configuraton;
 
 	Scene* scene;
 	PerlinNoise noise;
@@ -42,8 +42,10 @@ class TerrainSystem : public Module
 	void DestroyChunk(TerrainChunk* chunk);
 	TerrainChunk* CreateChunk(glm::ivec2 position);
 public:
+	TerrainSystem(TerrainSystemConfiguration configuraton);
 	void Update(float time) override;
 	void Initialize(TurboEngine* engine) override;
+
 	void Seed(unsigned int seed, float lod1, float lod2, float lod3, glm::vec2 chunkSize);
 	void EndWork() override;
 	static float LODDistance1;

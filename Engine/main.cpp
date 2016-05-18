@@ -2,9 +2,32 @@
 #include "ShaderProgram.h"
 #include "CurveAnimation.h"
 #include "TerrainSystem.h"
-
+#include "LodInfo.h"
 
 Renderable* CreateRend2();
+
+LodInfo GenerateLodInfo()
+{
+	LodInfo lod;
+	lod.distances.push_back(50);
+	lod.sizes.push_back(100);
+	lod.distances.push_back(120);
+	lod.sizes.push_back(50);
+	lod.distances.push_back(200);
+	lod.sizes.push_back(20);
+	lod.size = 3;
+	return lod;
+}
+
+TerrainSystemConfiguration GenerateConfiguration()
+{
+	TerrainSystemConfiguration conf;
+	conf.lods = GenerateLodInfo();
+	conf.seed = 12553;
+	conf.amplitude = 8;
+
+	return conf;
+}
 
 int main(int argc, char** argv)
 {
@@ -17,24 +40,31 @@ int main(int argc, char** argv)
 	// Engine initialization
 	engine.Initialize(800, 600, "Projekt indywidualny - generator terenu");
 
+	//Loads base shaders.
 	ShaderProgram* shad = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
-	Camera* camera = new Camera(glm::vec3(0, 2, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 45);
-	auto terrain = new TerrainSystem();
-	terrain->Seed(12352, 50, 120, 200,glm::vec2(20));
+	//Sets initial camera.
+	Camera* camera = new Camera(glm::vec3(0, 10, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 45);
+
+	auto terrain = new TerrainSystem(GenerateConfiguration());
+	terrain->Seed(12352, 50, 120, 200, glm::vec2(20));
+	// Sets move controller.
 	auto anim = new InputControlAnimation();
 	camera->SetAnimation(anim);
 	anim->StartAnimation();
+	//initialize scene and adds modules to engine.
 	Scene* sc = new Scene(glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(1.0f), camera);
 	sc->shader = shad;
 	engine.SetScene(sc);
 	engine.AddModule(terrain);
 	sc->AddAnimatable(camera);
+	//test model
 	Renderable* rend = CreateRend2();
 	sc->AddRenderable(rend);
 
 	// Game loop
 	return engine.Run();
 }
+
 
 Renderable* CreateRend2()
 {
@@ -103,7 +133,7 @@ Renderable* CreateRend2()
 
 	vecs->push_back(Vertex(1, 1, -1, 0, 0, -1, 1, 0));
 	vecs->push_back(Vertex(1, -1, -1, 0, 0, -1, 1, 0));
-	vecs->push_back(Vertex(-1, 1, -1, 0, 0,- 1, 1, 0));
+	vecs->push_back(Vertex(-1, 1, -1, 0, 0, -1, 1, 0));
 	vecs->push_back(Vertex(-1, -1, -1, 0, 0, -1, 1, 0));
 
 	indices->push_back(20);

@@ -4,6 +4,8 @@
 #include "TerrainChunk.h"
 #include <unordered_map>
 #include "LodInfo.h"
+
+// Class needed for unordered map of TerrainChunks.
 namespace std
 {
 	template <>
@@ -27,28 +29,52 @@ namespace std
 
 class TerrainSystem : public Module
 {
+	// Contains all active chunks in system
 	std::unordered_map<glm::ivec2, TerrainChunk*> chunks;
+	// Active system configuration
 	TerrainSystemConfiguration configuraton;
 
+	// Active scene containing chunks.
 	Scene* scene;
 	PerlinNoise noise;
-	glm::ivec2 chunkSize;
 	glm::ivec2 lastPos = glm::vec2(0);
 
+	// Checks if chunk on given position should and exists. True if should be created
 	bool CheckChunk(glm::ivec2 position, glm::vec3 camera) const;
+
+	// Updates Chunks - deletes and creates new ones.
 	void UpdateChunks(glm::ivec2 position, glm::vec3 camera);
+
+	// Creates chunk on given position. Adds it to system.
 	void MakeChunk(glm::ivec2 position);
+
+	//Adds created chunk to system
 	void AddChunk(TerrainChunk* chunk);
+
+	// Removes from scene and frees pointed memory
 	void DestroyChunk(TerrainChunk* chunk);
+
+	// Creates chunk on given position. Do NOT adds it to system.
 	TerrainChunk* CreateChunk(glm::ivec2 position);
 public:
+
+	// Basic constructor
 	TerrainSystem(TerrainSystemConfiguration configuraton);
+
+	// Overriden Module Update. Should not be used explicitly
 	void Update(float time) override;
+
+	//Overriden Module Initialize - For use in engine.
 	void Initialize(TurboEngine* engine) override;
 
-	void Seed(unsigned int seed, float lod1, float lod2, float lod3, glm::vec2 chunkSize);
+	// [Deprecated] to be removed
+	void Seed(float lod1, float lod2, float lod3);
+	//Overriden standard Module method. Cleans up everything
 	void EndWork() override;
+	// [Deprecated] to be removed
 	static float LODDistance1;
+	// [Deprecated] to be removed
 	static float LODDistance2;
+	// [Deprecated] to be removed
 	static float LODDistance3;
 };

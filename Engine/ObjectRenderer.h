@@ -13,6 +13,18 @@ private:
 	int width;
 	int height;
 
+public:
+	int width1() const
+	{
+		return width;
+	}
+
+	int height1() const
+	{
+		return height;
+	}
+
+private:
 	void Initialization();
 	void RenderObject(const Renderable& object, int modelLocation, int colorLocation) const;
 public:

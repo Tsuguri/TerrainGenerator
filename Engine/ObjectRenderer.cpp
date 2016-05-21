@@ -53,6 +53,8 @@ void ForwardRenderer::Initialization()
 	glPolygonMode(GL_BACK, GL_LINE);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ForwardRenderer::RenderObject(const Renderable& object,int modelLocation,int colorLocation) const

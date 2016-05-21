@@ -1,11 +1,24 @@
+#define _CRT_SECURE_NO_DEPRECATE
 #include "TurboEngine.h"
 #include "ShaderProgram.h"
-#include "CurveAnimation.h"
+#include "InputControlAnimation.h"
 #include "TerrainSystem.h"
 #include "LodInfo.h"
+#include "TextRenderer.h"
+#include "RangefinderSystem.h"
 
 Renderable* CreateRend2();
 
+inline bool FileExists(const std::string& name) {
+	if (FILE *file = fopen(name.c_str(), "r")) {
+		fclose(file);
+		return true;
+	}
+	std::cout<<"file "<<name<<" not found"<<std::endl;
+		return false;
+}
+
+//Generates default LodInfo
 LodInfo GenerateLodInfo()
 {
 	LodInfo lod;
@@ -19,34 +32,32 @@ LodInfo GenerateLodInfo()
 	return lod;
 }
 
+//Generates default terrain configuration - change if want to start with different setup
 TerrainSystemConfiguration GenerateConfiguration()
 {
 	TerrainSystemConfiguration conf;
 	conf.lods = GenerateLodInfo();
 	conf.seed = 12553;
-	conf.amplitude = 8;
-
+	conf.amplitude = 30;
+	conf.frequency = 300.0f;
+	conf.chunkSize = glm::vec2(20);
 	return conf;
 }
 
 int main(int argc, char** argv)
 {
+	// Checking if files are present
+	if (!FileExists("fonts/arial.ttf")  || !FileExists("BasicVertex.vsh") || !FileExists("BasicFragment.fsh") || !FileExists("FontVertex.vsh") ||!FileExists("FontFragment.fsh"))
+		return -1;
 
-	for (int i = 0; i < argc; i++)
-	{
-		std::cout << argv[i] << std::endl;
-	}
+	// First step: creation&initialization of Engine 
 	TurboEngine engine;
-	// Engine initialization
-	engine.Initialize(800, 600, "Projekt indywidualny - generator terenu");
+	engine.Initialize(1920, 1080, "Projekt indywidualny - generator terenu");
 
 	//Loads base shaders.
 	ShaderProgram* shad = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
 	//Sets initial camera.
 	Camera* camera = new Camera(glm::vec3(0, 10, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 45);
-
-	auto terrain = new TerrainSystem(GenerateConfiguration());
-	terrain->Seed(12352, 50, 120, 200, glm::vec2(20));
 	// Sets move controller.
 	auto anim = new InputControlAnimation();
 	camera->SetAnimation(anim);
@@ -55,95 +66,20 @@ int main(int argc, char** argv)
 	Scene* sc = new Scene(glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(1.0f), camera);
 	sc->shader = shad;
 	engine.SetScene(sc);
-	engine.AddModule(terrain);
 	sc->AddAnimatable(camera);
-	//test model
-	Renderable* rend = CreateRend2();
-	sc->AddRenderable(rend);
 
+	//Creation of terrain system
+	auto terrain = new TerrainSystem(GenerateConfiguration());
+	terrain->Seed(50, 120, 200);
+	//Creation of rangefind system (highly useless)
+	auto rangefind = new RangefinderSystem();
+	
+	// Adding both modules to engine
+	engine.AddModule(rangefind);
+	engine.AddModule(terrain);
+	
 	// Game loop
 	return engine.Run();
 }
 
 
-Renderable* CreateRend2()
-{
-	std::vector<Vertex>* vecs = new std::vector<Vertex>();
-	std::vector<GLuint>* indices = new std::vector<GLuint>();
-
-	vecs->push_back(Vertex(1, 1, 1, 1, 0, 0, 1, 0));//1
-	vecs->push_back(Vertex(1, 1, -1, 1, 0, 0, 1, 0));//1
-	vecs->push_back(Vertex(1, -1, 1, 1, 0, 0, 1, 0));//1
-	vecs->push_back(Vertex(1, -1, -1, 1, 0, 0, 1, 0));//1
-
-	indices->push_back(0);
-	indices->push_back(3);
-	indices->push_back(1);
-	indices->push_back(0);//1
-	indices->push_back(2);//1
-	indices->push_back(3);//1
-
-	vecs->push_back(Vertex(-1, 1, 1, -1, 0, 0, 1, 0));//4
-	vecs->push_back(Vertex(-1, 1, -1, -1, 0, 0, 1, 0));//4
-	vecs->push_back(Vertex(-1, -1, 1, -1, 0, 0, 1, 0));//4
-	vecs->push_back(Vertex(-1, -1, -1, -1, 0, 0, 1, 0));//4
-
-	indices->push_back(4);
-	indices->push_back(5);
-	indices->push_back(7);
-	indices->push_back(4);//1
-	indices->push_back(7);//1
-	indices->push_back(6);//1
-
-	vecs->push_back(Vertex(1, 1, 1, 0, 1, 0, 1, 0));//2
-	vecs->push_back(Vertex(1, 1, -1, 0, 1, 0, 1, 0));//2
-	vecs->push_back(Vertex(-1, 1, 1, 0, 1, 0, 1, 0));//2
-	vecs->push_back(Vertex(-1, 1, -1, 0, 1, 0, 1, 0));//2
-
-	indices->push_back(8);
-	indices->push_back(9);
-	indices->push_back(11);
-	indices->push_back(8);//1
-	indices->push_back(11);//1
-	indices->push_back(10);//1
-
-	vecs->push_back(Vertex(1, -1, 1, 0, -1, 0, 1, 0));//5
-	vecs->push_back(Vertex(1, -1, -1, 0, -1, 0, 1, 0));//5
-	vecs->push_back(Vertex(-1, -1, 1, 0, -1, 0, 1, 0));//5
-	vecs->push_back(Vertex(-1, -1, -1, 0, -1, 0, 1, 0));//5
-
-	indices->push_back(12);
-	indices->push_back(15);
-	indices->push_back(13);
-	indices->push_back(15);//1
-	indices->push_back(12);//1
-	indices->push_back(14);//1
-
-	vecs->push_back(Vertex(1, 1, 1, 0, 0, 1, 1, 0));//
-	vecs->push_back(Vertex(1, -1, 1, 0, 0, 1, 1, 0));//
-	vecs->push_back(Vertex(-1, 1, 1, 0, 0, 1, 1, 0));
-	vecs->push_back(Vertex(-1, -1, 1, 0, 0, 1, 1, 0));
-
-	indices->push_back(16);
-	indices->push_back(19);
-	indices->push_back(17);
-	indices->push_back(16);//1
-	indices->push_back(18);//1
-	indices->push_back(19);//1
-
-	vecs->push_back(Vertex(1, 1, -1, 0, 0, -1, 1, 0));
-	vecs->push_back(Vertex(1, -1, -1, 0, 0, -1, 1, 0));
-	vecs->push_back(Vertex(-1, 1, -1, 0, 0, -1, 1, 0));
-	vecs->push_back(Vertex(-1, -1, -1, 0, 0, -1, 1, 0));
-
-	indices->push_back(20);
-	indices->push_back(21);
-	indices->push_back(23);
-	indices->push_back(20);//1
-	indices->push_back(23);//1
-	indices->push_back(22);//1
-
-	Renderable* rend = new Renderable(new Model(new Mesh(*vecs, *indices)));
-	rend->color = glm::vec3(0.2f, 0.2f, 0.2f);
-	return rend;
-}

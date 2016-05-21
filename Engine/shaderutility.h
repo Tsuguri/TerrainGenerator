@@ -6,10 +6,10 @@
 class ShaderUtility
 {
 public:
-	static int LoadShader(char* vertexFilePath, char* fragmentFilePath,bool debugMode=false);
+	static int LoadShader(const char* vertexFilePath,const char* fragmentFilePath,bool debugMode=false);
 private:
-	static char* LoadFile(char* path, char* buffer, int bufferSize, bool debugMode=false);
-	static int CompileShader(char* path, GLenum type, bool debugMode = false);
+	static char* LoadFile(const char* path, char* buffer, int bufferSize, bool debugMode=false);
+	static int CompileShader(const char* path, GLenum type, bool debugMode = false);
 };
 
 

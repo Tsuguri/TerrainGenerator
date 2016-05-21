@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <vector>
-
+#include <glm/glm.hpp>
 struct LodInfo
 {
 	int size;
@@ -13,4 +13,6 @@ struct TerrainSystemConfiguration
 	LodInfo lods;
 	unsigned seed;
 	float amplitude;
+	float frequency;
+	glm::vec2 chunkSize;
 };

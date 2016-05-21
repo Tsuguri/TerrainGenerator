@@ -6,7 +6,7 @@ ShaderProgram::ShaderProgram()
 	programId = 0;
 }
 
-ShaderProgram::ShaderProgram(char * vertexPath, char * fragmentPath)
+ShaderProgram::ShaderProgram(const char * vertexPath, const char * fragmentPath)
 {
 	programId = ShaderUtility::LoadShader(vertexPath, fragmentPath);
 }

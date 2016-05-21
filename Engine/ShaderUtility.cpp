@@ -6,7 +6,7 @@ void ShowError(char* text)
 	printf(text);
 }
 
-int ShaderUtility::LoadShader(char* vertexFilePath,char* fragmentFilePath, bool debugMode)
+int ShaderUtility::LoadShader(const char* vertexFilePath,const char* fragmentFilePath, bool debugMode)
 {
 	GLuint vertexShaderID = CompileShader(vertexFilePath, GL_VERTEX_SHADER, debugMode);
 
@@ -51,7 +51,7 @@ int ShaderUtility::LoadShader(char* vertexFilePath,char* fragmentFilePath, bool 
 	return programId;
 }
 
-char* ShaderUtility::LoadFile(char* path,char* buffer,int bufferSize, bool debugMode)
+char* ShaderUtility::LoadFile(const char* path,char* buffer,int bufferSize, bool debugMode)
 {
 	std::ifstream input(path);
 	if (input.fail())
@@ -71,7 +71,7 @@ char* ShaderUtility::LoadFile(char* path,char* buffer,int bufferSize, bool debug
 	}
 }
 
-int ShaderUtility::CompileShader(char* path, GLenum type, bool debugMode)
+int ShaderUtility::CompileShader(const char* path, GLenum type, bool debugMode)
 {
 	const int maxCodeLength = 65535;
 

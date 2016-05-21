@@ -1,80 +1,44 @@
 ﻿#include "TerrainSystem.h"
 #include <future>
-
+#include "RangefinderSystem.h"
+#include <time.h>
 float TerrainSystem::LODDistance1;
 float TerrainSystem::LODDistance2;
 float TerrainSystem::LODDistance3;
 
-void testfun()
-{
 
-}
-void testfun2(int p, int z)
-{
-	int g = p + z;
-
-}
-
-template<typename T>
-bool check(std::future<T> fut)
-{
-	auto status = fut.wait_for(std::chrono::seconds(0));
-	return status == std::future_status::ready;
-}
-
-void test()
-{
-	testfun();
-	auto p = std::async(std::launch::async, testfun);
-	auto t2 = std::async(std::launch::async,testfun2,1,2);
-
-	//waiting
-
-	auto status = p.wait_for(std::chrono::seconds(0));
-	if (status == std::future_status::timeout) {
-		// still computing
-	}
-	else if (status == std::future_status::ready) {
-		// finished computing
-	}
-	else {
-		// There is still std::future_status::defered
-	}
-}
-
-
-bool TerrainSystem::CheckChunk(glm::ivec2 position,glm::vec3 camera) const
+bool TerrainSystem::CheckChunk(glm::ivec2 position, glm::vec3 camera) const
 {
 	return (length(camera - glm::vec3(position.x, 0, position.y)) < LODDistance3 && !chunks.count(position));
 
 }
 
-void TerrainSystem::UpdateChunks(glm::ivec2 position,glm::vec3 camera)
+void TerrainSystem::UpdateChunks(glm::ivec2 position, glm::vec3 camera)
 {
 	std::vector<TerrainChunk*> toAdd;
 	std::vector<TerrainChunk*> toRemove;
 
 	float time = glfwGetTime();
-	for(auto chunk : chunks)
+	for (auto chunk : chunks)
 	{
-		
-		if(!chunk.second->ActualizeLOD(camera))
+
+		if (!chunk.second->ActualizeLOD(camera))
 		{
 			toRemove.push_back(chunk.second);
 			continue;
 		}
 
 		glm::ivec2 pos = chunk.second->GetPosition();
-		if (CheckChunk(pos + glm::ivec2(chunkSize.x, 0), camera))
-			toAdd.push_back( CreateChunk(pos + glm::ivec2(chunkSize.x, 0)));
+		if (CheckChunk(pos + glm::ivec2(configuraton.chunkSize.x, 0), camera))
+			toAdd.push_back(CreateChunk(pos + glm::ivec2(configuraton.chunkSize.x, 0)));
 
-		if (CheckChunk(pos + glm::ivec2(-chunkSize.x, 0), camera))
-			toAdd.push_back(CreateChunk(pos + glm::ivec2(-chunkSize.x, 0)));
-		if (CheckChunk(pos + glm::ivec2(0, chunkSize.y), camera))
-			toAdd.push_back(CreateChunk(pos + glm::ivec2(0, chunkSize.y)));
+		if (CheckChunk(pos + glm::ivec2(-configuraton.chunkSize.x, 0), camera))
+			toAdd.push_back(CreateChunk(pos + glm::ivec2(-configuraton.chunkSize.x, 0)));
+		if (CheckChunk(pos + glm::ivec2(0, configuraton.chunkSize.y), camera))
+			toAdd.push_back(CreateChunk(pos + glm::ivec2(0, configuraton.chunkSize.y)));
 
-		if (CheckChunk(pos + glm::ivec2(0, -chunkSize.y), camera))
-			toAdd.push_back(CreateChunk(pos + glm::ivec2(0, -chunkSize.y)));
+		if (CheckChunk(pos + glm::ivec2(0, -configuraton.chunkSize.y), camera))
+			toAdd.push_back(CreateChunk(pos + glm::ivec2(0, -configuraton.chunkSize.y)));
 	}
 
 	printf("checkpoint 1: %f\n", glfwGetTime() - time);
@@ -83,8 +47,8 @@ void TerrainSystem::UpdateChunks(glm::ivec2 position,glm::vec3 camera)
 		for (auto chunk : toAdd)
 			AddChunk(chunk);
 	printf("	removed %d", (int)toRemove.size());
-	if(toRemove.size()>0)
-		for(auto chunk : toRemove)
+	if (toRemove.size() > 0)
+		for (auto chunk : toRemove)
 		{
 			chunks.erase(chunk->GetPosition());
 			DestroyChunk(chunk);
@@ -112,7 +76,7 @@ void TerrainSystem::DestroyChunk(TerrainChunk* chunk)
 TerrainChunk* TerrainSystem::CreateChunk(glm::ivec2 position)
 {
 	auto rend = new TerrainChunk();
-	rend->Initialize(position, chunkSize, &noise,&configuraton);
+	rend->Initialize(position, configuraton.chunkSize, &noise, &configuraton);
 	return rend;
 }
 
@@ -123,13 +87,13 @@ void TerrainSystem::Update(float time)
 	glm::ivec2 camera(position.x, position.z);
 	if (position.x < 0)
 		position.x -= 1.0f;
-	if (position.z< 0)
+	if (position.z < 0)
 		position.z -= 1.0f;
-	pos.x = (int)position.x / (int)chunkSize.x;
-	pos.y = (int)position.z / (int)chunkSize.y;
+	pos.x = (int)position.x / (int)configuraton.chunkSize.x;
+	pos.y = (int)position.z / (int)configuraton.chunkSize.y;
 	if (position.x < 0)
 		pos.x -= 1;
-	if (position.z< 0)
+	if (position.z < 0)
 		pos.y -= 1;
 
 	if (pos.x != lastPos.x || pos.y != lastPos.y)
@@ -158,23 +122,36 @@ void TerrainSystem::Initialize(TurboEngine* engine)
 	scene = engine->GetCurrentScene();
 
 	Module::Initialize(engine);
-	float time  = glfwGetTime();
+	float ti = glfwGetTime();
 	for (int i = -5; i < 6; i++)
 		for (int j = -5; j < 6; j++)
 		{
-			MakeChunk(glm::ivec2(i*chunkSize.x, j*chunkSize.y));
+			MakeChunk(glm::ivec2(i*configuraton.chunkSize.x, j*configuraton.chunkSize.y));
 		}
-	time = glfwGetTime() - time;
-	printf("initializing Terrain System : %f s\n",time);
+	ti = glfwGetTime() - ti;
+	printf("initializing Terrain System : %f s\n", ti);
+
+	//auto it = chunks.find(glm::ivec2(0));
+	std::vector<glm::vec3> poss;
+	srand((unsigned)time(NULL));
+	for (int i = 0; i < 10; i++)
+	{
+		auto x = (rand() % 100) / configuraton.frequency;
+		auto y = (rand() % 100) / configuraton.frequency;
+		auto h = static_cast<float>(noise.noise(8 * x, 8 * y, 0) + noise.noise(4 * x, 4 * y, 0)*0.5f + noise.noise(2 * x, 2 * y, 0)*0.25f)*configuraton.amplitude + 1;
+		x *= configuraton.frequency;
+		y *= configuraton.frequency;
+		poss.push_back(glm::vec3(x, h, y));
+	}
+	RangefinderSystem::Get()->StartWorking(poss);
+
 }
 
-void TerrainSystem::Seed(unsigned seed, float lod1, float lod2, float lod3, glm::vec2 chunkSize)
+void TerrainSystem::Seed(float lod1, float lod2, float lod3)
 {
 	LODDistance1 = lod1;
 	LODDistance2 = lod2;
 	LODDistance3 = lod3;
-	this->chunkSize = chunkSize;
-
 }
 
 void TerrainSystem::EndWork()

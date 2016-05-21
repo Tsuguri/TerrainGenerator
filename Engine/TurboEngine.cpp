@@ -2,6 +2,7 @@
 #include <thread>
 #include <algorithm>
 #include "Module.h"
+#include "TextRenderer.h"
 
 
 TurboEngine* TurboEngine::instance = NULL;
@@ -36,7 +37,7 @@ int TurboEngine::Initialize(int width, int height, char* windowName, int maxFPS)
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	window = glfwCreateWindow(width, height, windowName, nullptr, nullptr);
+	window = glfwCreateWindow(width, height, windowName, glfwGetPrimaryMonitor(), nullptr);
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -58,17 +59,20 @@ int TurboEngine::Initialize(int width, int height, char* windowName, int maxFPS)
 		std::cout << "Failed to initialize GLEW" << std::endl;
 		return -1;
 	}
-
+	//glfwSetWindowPos(window, 0, 30);
 	// Define the viewport dimensions
 	glViewport(0, 0, width, height);
 	objectRenderer = new ForwardRenderer(width, height);
 	return 0;
+
 }
+
+
 
 int TurboEngine::Run()
 {
 	bool showFPS = false;
-
+	TextRenderer text =TextRenderer("fonts/arial.ttf", "FontVertex.vsh", "FontFragment.fsh");
 
 	double lastFrameTime = 0.0;
 	int frameCounter = 0;
@@ -79,18 +83,19 @@ int TurboEngine::Run()
 
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		//glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		frameCounter += 1;
 		// Update timer 
 			// TODO
 		activeScene->Animate(lastFrameTime);
 		UpdateModules(lastFrameTime);
 		// Render
+			text.SetScreenSize(objectRenderer->width1(), objectRenderer->height1());
+
 		if (objectRenderer && activeScene)
 			objectRenderer->Render(*activeScene);
-
-
+			text.Render();
 		lastFrameTime = glfwGetTime() - temp;
 		if (maxFrameTime != -1.0f && lastFrameTime < maxFrameTime)
 		{
@@ -108,12 +113,10 @@ int TurboEngine::Run()
 			time = 0.0;
 			frameCounter = 0;
 		}
-
 		temp = glfwGetTime();
 		glfwSwapBuffers(window);
 		ResetMouse();
 	}
-
 	// Terminate GLFW, clearing any resources allocated by GLFW.
 	glfwTerminate();
 	return 0;

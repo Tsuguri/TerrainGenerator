@@ -62,7 +62,7 @@ void TerrainChunk::SetLOD(int lod)
 
 Model* TerrainChunk::CreateLOD(int size) const
 {
-	float fre = 100;//frequency
+	float fre = configuration->frequency;//frequency
 	float ts = this->size.x / (float)size;
 	float** heights = new float*[size+1];
 	float ampl = configuration->amplitude;
@@ -146,7 +146,7 @@ float TerrainChunk::GetHeight(float x, float y) const
 bool TerrainChunk::ActualiseVisiblity(glm::vec3 cameraPosition)
 {
 	glm::vec2 temp = (position + size / 2);
-	float distance = glm::length(cameraPosition - glm::vec3(temp.x, 0.0f, temp.y));
+	float distance = glm::length(cameraPosition - glm::vec3(temp.x, cameraPosition.y, temp.y));
 	switch (actualLOD)
 	{
 	case 1:

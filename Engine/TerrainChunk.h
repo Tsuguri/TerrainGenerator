@@ -6,6 +6,7 @@
 class TerrainChunk : public Renderable
 {
 	glm::ivec2 position;
+	float heigh=1;
 	glm::ivec2 size;
 	int actualLOD;
 	TerrainSystemConfiguration* configuration;

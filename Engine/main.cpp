@@ -22,12 +22,12 @@ inline bool FileExists(const std::string& name) {
 LodInfo GenerateLodInfo()
 {
 	LodInfo lod;
-	lod.distances.push_back(50);
-	lod.sizes.push_back(100);
-	lod.distances.push_back(120);
+	lod.distances.push_back(40);
 	lod.sizes.push_back(50);
+	lod.distances.push_back(100);
+	lod.sizes.push_back(25);
 	lod.distances.push_back(200);
-	lod.sizes.push_back(20);
+	lod.sizes.push_back(5);
 	lod.size = 3;
 	return lod;
 }

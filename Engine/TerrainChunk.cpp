@@ -17,53 +17,24 @@ public:
 	Triangle down;
 };
 
-
-
-void TerrainChunk::CreateLOD1()
+void TerrainChunk::CreateLOD(int i)
 {
-	if (lod1)
+	if (lods[i])
 		return;
-	lod1 = CreateLOD(100);
-}
-
-void TerrainChunk::CreateLOD2()
-{
-	if (lod2)
-		return;
-	lod2 = CreateLOD(25);
-}
-
-void TerrainChunk::CreateLOD3()
-{
-	if (lod3)
-		return;
-	lod3 = CreateLOD(5);
+	lods[i] = GenerateLOD(configuration->lods.sizes[i]);
 }
 
 void TerrainChunk::SetLOD(int lod)
 {
-	switch (lod)
-	{
-	case 1:
-		CreateLOD1();
-		model = lod1;
-		break;
-	case 2:
-		CreateLOD2();
-		model = lod2;
-		break;
-	case 3:
-		CreateLOD3();
-		model = lod3;
-		break;
-	}
+	CreateLOD(lod);
+	model = lods[lod];
 	actualLOD = lod;
 }
 
-Model* TerrainChunk::CreateLOD(int size) const
+Model* TerrainChunk::GenerateLOD(int size) const
 {
 	float fre = configuration->frequency;//frequency
-	float ts = this->size.x / (float)size;
+	float ts = configuration->chunkSize.x / (float)size;
 	float** heights = new float*[size+1];
 	float ampl = configuration->amplitude;
 	for (int i = 0; i < size + 1;i++)
@@ -145,69 +116,46 @@ float TerrainChunk::GetHeight(float x, float y) const
 
 bool TerrainChunk::ActualiseVisiblity(glm::vec3 cameraPosition)
 {
-	glm::vec2 temp = (position + size / 2);
+	glm::vec2 temp = (position + configuration->chunkSize / 2);
 	float distance = glm::length(cameraPosition - glm::vec3(temp.x, cameraPosition.y, temp.y));
-	switch (actualLOD)
+	float time = glfwGetTime();
+	if(actualLOD<0)
 	{
-	case 1:
-		if (distance > TerrainSystem::LODDistance1 + 5)
-		{
-			SetLOD(2);
-		}
-		break;
-	case 2:
-		if (distance > TerrainSystem::LODDistance2 + 5)
-		{
-			SetLOD(3);
-		}
-		if (distance < TerrainSystem::LODDistance1 - 5)
-		{
-			SetLOD(1);
-		}
-		break;
-	case 3:
-		if (distance < TerrainSystem::LODDistance2 - 5)
-		{
-			SetLOD(2);
-		}
-		else if (distance>TerrainSystem::LODDistance3+20)
+		int i;
+		for (i = configuration->lods.size-1; i >=0; i--)
+			if (distance>configuration->lods.distances[i])
+				break;
+		i++;
+		if (i == configuration->lods.size)
 			return false;
-		break;
-	default:
-		if (distance < TerrainSystem::LODDistance1)
+		SetLOD(i);
+		return true;
+	}
+
+	if(distance> configuration->lods.distances[actualLOD]+5)
+	{
+		if (actualLOD == configuration->lods.size - 1)
 		{
-			CreateLOD1();
-			actualLOD = 1;
-			model = lod1;
-		}
-		else if (distance < TerrainSystem::LODDistance2)
-		{
-			CreateLOD2();
-			actualLOD = 2;
-			model = lod2;
-		}
-		else if (distance < TerrainSystem::LODDistance3)
-		{
-			CreateLOD3();
-			actualLOD = 3;
-			model = lod3;
-		}
-		else if(distance > TerrainSystem::LODDistance3+20)
 			return false;
-		break;
+		}
+		else
+			SetLOD(actualLOD + 1);
+	}
+	if(actualLOD>0 && distance<configuration->lods.distances[actualLOD-1]-5)
+	{
+		SetLOD(actualLOD - 1);
 	}
 	return true;
-
 }
 
 TerrainChunk::~TerrainChunk()
 {
-	if (lod1)
-		delete lod1;
-	if (lod2)
-		delete lod2;
-	if (lod3)
-		delete lod3;
+	for (int i = 0; i < configuration->lods.size;i++)
+	{
+		if (lods[i])
+			delete lods[i];
+	}
+	delete lods;
 	model = nullptr;
 }
 
@@ -219,12 +167,13 @@ bool TerrainChunk::ActualizeLOD(glm::vec3 cameraPosition)
 }
 
 
-void TerrainChunk::Initialize(glm::ivec2 position, glm::ivec2 size, PerlinNoise* noise,TerrainSystemConfiguration* configuration)
+void TerrainChunk::Initialize(glm::ivec2 position, PerlinNoise* noise,TerrainSystemConfiguration* configuration)
 {
 	this->position = position;
-	this->size = size;
 	this->noise = noise;
-	lod1 = lod2 = lod3 = nullptr;
+	lods = new Model*[configuration->lods.size];
+	for (int i = 0; i < configuration->lods.size; i++)
+		lods[i] = nullptr;
 	color = glm::vec3(0.2f, 0.7f, 0.2f);
 	actualLOD = -1;
 	this->configuration = configuration;

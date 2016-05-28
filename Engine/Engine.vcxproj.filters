@@ -66,9 +66,6 @@
     <ClCompile Include="TerrainSystem.cpp">
       <Filter>Terrain</Filter>
     </ClCompile>
-    <ClCompile Include="LodInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TextRenderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -76,6 +73,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RangefinderSystem.cpp">
+      <Filter>Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="LodInfo.cpp">
       <Filter>Terrain</Filter>
     </ClCompile>
   </ItemGroup>

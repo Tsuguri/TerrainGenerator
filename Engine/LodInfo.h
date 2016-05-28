@@ -14,5 +14,5 @@ struct TerrainSystemConfiguration
 	unsigned seed;
 	float amplitude;
 	float frequency;
-	glm::vec2 chunkSize;
+	glm::ivec2 chunkSize;
 };

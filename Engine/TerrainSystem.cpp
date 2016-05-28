@@ -76,7 +76,7 @@ void TerrainSystem::DestroyChunk(TerrainChunk* chunk)
 TerrainChunk* TerrainSystem::CreateChunk(glm::ivec2 position)
 {
 	auto rend = new TerrainChunk();
-	rend->Initialize(position, configuraton.chunkSize, &noise, &configuraton);
+	rend->Initialize(position, &noise, &configuraton);
 	return rend;
 }
 

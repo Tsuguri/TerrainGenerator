@@ -1,3 +1,4 @@
 *.sdf
 TurboEngine.VC.opendb
 Release/
+Engine/x64/

@@ -37,7 +37,7 @@ int TurboEngine::Initialize(int width, int height, char* windowName, int maxFPS)
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	window = glfwCreateWindow(width, height, windowName, glfwGetPrimaryMonitor(), nullptr);
+	window = glfwCreateWindow(width, height, windowName, NULL, nullptr);//glfwGetPrimaryMonitor()
 	if (window == nullptr)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;

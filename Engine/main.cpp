@@ -1,4 +1,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
+#include <fstream>
+#include <sstream>
+#include <string>
 #include "TurboEngine.h"
 #include "ShaderProgram.h"
 #include "InputControlAnimation.h"
@@ -7,6 +10,7 @@
 #include "TextRenderer.h"
 #include "RangefinderSystem.h"
 
+
 Renderable* CreateRend2();
 
 inline bool FileExists(const std::string& name) {
@@ -14,8 +18,8 @@ inline bool FileExists(const std::string& name) {
 		fclose(file);
 		return true;
 	}
-	std::cout<<"file "<<name<<" not found"<<std::endl;
-		return false;
+	std::cout << "file " << name << " not found" << std::endl;
+	return false;
 }
 
 //Generates default LodInfo
@@ -32,7 +36,7 @@ LodInfo GenerateLodInfo()
 	return lod;
 }
 
-//Generates default terrain configuration - change if want to start with different setup
+//Generates default terrain configuration - change if want to start with different setup ( debug method)
 TerrainSystemConfiguration GenerateConfiguration()
 {
 	TerrainSystemConfiguration conf;
@@ -44,10 +48,81 @@ TerrainSystemConfiguration GenerateConfiguration()
 	return conf;
 }
 
+TerrainSystemConfiguration GenerateConfigurationFromFile(std::string filePath)
+{
+	TerrainSystemConfiguration conf;
+
+	std::ifstream is_file(filePath);
+
+	std::string line;
+	while (std::getline(is_file, line))
+	{
+		std::istringstream is_line(line);
+		std::string key;
+
+		if (std::getline(is_line, key, '='))
+		{
+			std::string value;
+			if (key == "seed")
+			{
+				if (std::getline(is_line, value))
+				{
+					int sd = std::stoi(value);
+					conf.seed = sd;
+				}
+			}
+			if (key == "amplitude")
+			{
+				if (std::getline(is_line, value))
+				{
+					conf.amplitude = std::stoi(value);
+				}
+			}
+			if (key == "frequency")
+			{
+				if (std::getline(is_line, value))
+				{
+					conf.frequency = std::stof(value);
+				}
+			}
+			if (key == "chunkSize")
+			{
+				if (std::getline(is_line, value))
+				{
+					conf.chunkSize = glm::ivec2(std::stoi(value));
+				}
+			}
+			if (key == "lods")
+			{
+				if (std::getline(is_line, value))
+				{
+					conf.lods.size = std::stoi(value);
+				}
+			}
+			if (key == "sizes")
+			{
+				while (std::getline(is_line, value, ' '))
+				{
+					conf.lods.sizes.push_back(std::stoi(value));
+				}
+			}
+			if (key == "distances")
+			{
+				while (std::getline(is_line, value,' '))
+				{
+					conf.lods.distances.push_back(std::stoi(value));
+				}
+			}
+
+		}
+	}
+	return conf;
+}
+
 int main(int argc, char** argv)
 {
 	// Checking if files are present
-	if (!FileExists("fonts/arial.ttf")  || !FileExists("BasicVertex.vsh") || !FileExists("BasicFragment.fsh") || !FileExists("FontVertex.vsh") ||!FileExists("FontFragment.fsh"))
+	if (!FileExists("Config.txt") || !FileExists("fonts/arial.ttf") || !FileExists("BasicVertex.vsh") || !FileExists("BasicFragment.fsh") || !FileExists("FontVertex.vsh") || !FileExists("FontFragment.fsh"))
 		return -1;
 
 	// First step: creation&initialization of Engine 
@@ -56,12 +131,15 @@ int main(int argc, char** argv)
 
 	//Loads base shaders.
 	ShaderProgram* shad = new ShaderProgram("BasicVertex.vsh", "BasicFragment.fsh");
+
 	//Sets initial camera.
 	Camera* camera = new Camera(glm::vec3(0, 10, -4), glm::quat(glm::vec3(0, 0, 0)), glm::vec3(0, 1, 0), 0.1f, 200.0f, 45);
+
 	// Sets move controller.
 	auto anim = new InputControlAnimation();
 	camera->SetAnimation(anim);
 	anim->StartAnimation();
+
 	//initialize scene and adds modules to engine.
 	Scene* sc = new Scene(glm::vec3(1.0f, 1.0f, -1.0f), glm::vec3(1.0f), camera);
 	sc->shader = shad;
@@ -69,15 +147,15 @@ int main(int argc, char** argv)
 	sc->AddAnimatable(camera);
 
 	//Creation of terrain system
-	auto terrain = new TerrainSystem(GenerateConfiguration());
+	auto terrain = new TerrainSystem(GenerateConfigurationFromFile("Config.txt"));
 	terrain->Seed(50, 120, 200);
 	//Creation of rangefind system (highly useless)
 	auto rangefind = new RangefinderSystem();
-	
+
 	// Adding both modules to engine
 	engine.AddModule(rangefind);
 	engine.AddModule(terrain);
-	
+
 	// Game loop
 	return engine.Run();
 }

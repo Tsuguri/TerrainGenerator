@@ -1,0 +1,7 @@
+seed=12553
+amplitude=10
+frequency=300
+chunkSize=20
+lods=3
+sizes=50 25 5
+distances=40 100 200
